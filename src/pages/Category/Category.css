@@ -12,4 +12,14 @@
     overflow: hidden;
     width: 100%;
     max-width: unset;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30vh;
+    gap: 50px;
+}
+
+.category-container button{
+    padding: 20px;
+    cursor: pointer;
+}

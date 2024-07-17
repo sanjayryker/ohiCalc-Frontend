@@ -68,9 +68,15 @@
     align-items: center;
 }
 
+.card-header .active{
+    background-color:#3BBA9C;
+    color: white;
+    border: solid 0.5px #3BBA9C;
+}
+
 .card button{
     background: transparent;
-    font-size: 16px;
+    font-size: 14px;
     color: black;
     border: solid 0.5px #49557e ;
     padding: 10px 30px;

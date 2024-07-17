@@ -12,9 +12,9 @@ const Category = () => {
   return (
     <div className="category">
       <div className="category-container">
-        <button type="button" className="btn btn-primary" onClick={() => handleNavigation("/EDI/keyInd1")}>EDI</button>
-        <button className="btn btn-primary" onClick={() => handleNavigation("/IDI/keyInd1?current_tab=Ind1")}>IDI</button>
-        <button className="btn btn-primary" onClick={() => handleNavigation("/CDI/keyInd1?current_tab=Ind1")}>CDI</button>
+        <button onClick={() => handleNavigation("/EDI/keyInd1")}>EDI</button>
+        <button onClick={() => handleNavigation("/IDI/keyInd1?current_tab=Ind1")}>IDI</button>
+        <button onClick={() => handleNavigation("/CDI/keyInd1?current_tab=Ind1")}>CDI</button>
       </div>
     </div>
   );

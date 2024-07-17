@@ -16,7 +16,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Home/>} />
         <Route path='/category' element={<Category/>} />
-        <Route path='/EDI/keyInd1' element={<KeyInd1/>} />
+        <Route path='/EDI/:page' element={<KeyInd1/>} />
       </Routes>
     </div>
   )
