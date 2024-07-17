@@ -1,0 +1,146 @@
+.key-ind1 {
+  position: relative;
+  width: calc(100% - 250px);
+  float: right;
+  min-height: 100%;
+  background-color: #e5e4e2;
+}
+
+.container {
+  padding: 0px !important;
+  min-height: 100%;
+  margin-top: 12vh;
+  overflow: hidden;
+  width: 100%;
+  max-width: unset;
+}
+
+.page-inner {
+  padding-right: 2rem;
+  padding-left: 2rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.breadcrumbs {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  border-left: 1px solid #efefef;
+  margin-left: 25px;
+  padding-left: 25px;
+  margin-bottom: 0px;
+  padding-top: 20px;
+  padding-bottom: 8px;
+  height: 100%;
+}
+
+.row-card{
+    width: 100%;
+    height: 100%;
+    margin-bottom: 30px;
+    border: auto;
+    background-color: white;
+    border-radius: 30px;
+}
+
+.card{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header{
+    height: 100%;
+    width: 100%;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 30px 20px 20px 20px;
+    gap: 20px;
+    align-items: center;
+}
+
+.card button{
+    background: transparent;
+    font-size: 16px;
+    color: black;
+    border: solid 0.5px #49557e ;
+    padding: 10px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.card button:hover{
+    background-color:#3BBA9C;
+    color: white;
+    border: solid 0.5px #3BBA9C ;
+}
+
+.card-line{
+    width: 90%;
+    height: 1px;
+    display: flex;
+    margin: auto;
+    border-bottom: solid 1px rgb(189, 189, 189);
+}
+
+.card-body{
+    padding: 10px 50px 10px 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+th{
+    padding: 20px;
+}
+
+td{
+    padding: 20px;
+}
+
+.head-pad{
+    padding-right: 100px;
+}
+
+input{
+    padding: 5px;
+    width: 120px;
+    border-radius:5px;
+    border: 0.5px solid black;
+}
+
+/* .card-container{
+    display: flex;
+    margin-top: 30px;
+}
+
+.content{
+flex: 1;
+}
+
+.answer{
+    display: flex;
+    flex: 2;
+    gap: 20px;
+} */
+
+.button-container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+

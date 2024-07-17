@@ -1,0 +1,15 @@
+.category{
+    position: relative;
+    width: 100%;
+    float: right;
+    min-height: 100%;
+}
+
+.category-container {
+    padding: 0px !important;
+    min-height: 100%;
+    margin-top: 12vh;
+    overflow: hidden;
+    width: 100%;
+    max-width: unset;
+  }
