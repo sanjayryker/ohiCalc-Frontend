@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Navbar.css";
-import icon from '../assets/nav_icon.ico'
+import icon from '../assets/nav_icon.png'
 import profile_icon from '../assets/nav_user_icon.png'
 
 const Navbar = () => {

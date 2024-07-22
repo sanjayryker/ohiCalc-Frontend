@@ -84,7 +84,7 @@ export const keyInd4_data = [
         tab:'Ind1',
         keyInd_name:"Sociological System",
         indName:'Demography',
-        subInd:['Life Expectancy','Child and Infant Mortality','Total Fertility Rate','Urbanization'],
+        subInd:['Natural Population Growth','Life Expectancy','Child and Infant Mortality','Total Fertility Rate','Urbanization'],
         subInd_weight:"20",
     },
     {

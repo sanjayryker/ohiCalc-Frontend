@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import "./Sidebar.css";
-import { SidebarEdiData } from "./SidebarData";
+import { SidebarCdiData } from "./SidebarData";
 import { useNavigate } from "react-router-dom";
 
-const Sidebar = () => {
+const SidebarCdi = ({keyIndScore}) => {
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
@@ -13,7 +13,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <ul className="sidebar-list">
-        {SidebarEdiData.map((value, index) => {
+        {SidebarCdiData.map((value, index) => {
           return (
             <Fragment key={index}>
               <li
@@ -23,6 +23,7 @@ const Sidebar = () => {
               >
                 
                 <div className="title"> {value.title} </div>
+                {keyIndScore[index] && <div className="icon" id={window.location.pathname == value.link ? "actives" : ""}> Score: {keyIndScore[index]}</div>}
               </li>
             </Fragment>
           );
@@ -32,4 +33,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarCdi;

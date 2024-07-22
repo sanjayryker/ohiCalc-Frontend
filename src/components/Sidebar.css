@@ -22,9 +22,8 @@
     /* border: 1px solid black; */
     list-style-type: none;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     color: rgb(207, 201, 201);
-    align-items: center;
     justify-content: center;
     transition: 0.3s;
 }
@@ -42,16 +41,17 @@
     color: white;
 }
 
-.row .icon{
-    flex: 30%;
-    display: grid;
-    place-items: center;
-}
-
-.row .title{
-    flex: 70%;
-}
-
 .title{
     padding-left: 20px;
+}
+
+.icon{
+    padding-left: 20px;
+    padding-top: 10px;
+    color:  #3BBA9C;
+    display: none;
+}
+
+#actives{
+    display: block;
 }

@@ -1,27 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar'
-import './KeyInd1.css'
-import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
+import './EDI.css'
+import { keyInd1_data, keyInd2_data, keyInd3_data } from './IDI-keyInd-Data';
 import axios from 'axios';
 import {URL} from '../../App'
+import SidebarIdi from '../../components/Sidebar-IDI';
+import arrow from '../../assets/right_arrow.png'
+import { useNavigate } from 'react-router-dom';
 
-  const KeyInd1 = () => {
+const IDI = () => {
 
-    const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data, keyInd4: keyInd4_data, keyInd5: keyInd5_data,}
+    const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data}
 
     const location = useLocation()
     const [data,setData] = useState({})
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputValues, setInputValues] = useState([])
     const [indicatorScore,setIndicatorScore] = useState('')
-    const [keyIndScore,setKeyIndScore] = useState('')
+    const [keyIndScore,setKeyIndScore] = useState([])
 
     const currentTab = searchParams.get('current_tab');
 
     useEffect(() => {
       fetchData()
+      keyIndScoreFetch()
     }, [currentTab, setSearchParams, location.pathname]);
+
+    const navigate = useNavigate();
+
+    const handleNavigation = (path) => {
+      navigate(path);
+    };
+
+    //fetch Key Ind Score
+    const keyIndScoreFetch = async() =>{
+      const response = await axios.get(`${URL}/api/keyIndScore/IDI`)
+      const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
+      const keyScores = sortedArray.map((value) => value.keyInd_Score)
+      setKeyIndScore(keyScores)
+    }
 
     //Data fetch functions 
     const fetchData = async() =>{
@@ -31,13 +48,13 @@ import {URL} from '../../App'
       const datas = dataset[splitPath[1]].find(item => item.tab === currentTab);
       setData(datas)
       
-      const category = "EDI"
+      const category = "IDI"
       const key = splitPath[1]
       const ind = currentTab
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/IDI/getData`,{category,key,ind})
         const fetchedData = response.data
 
         if (fetchedData && fetchedData.values) {
@@ -78,6 +95,8 @@ import {URL} from '../../App'
     //Update current Tab Value
     const updateTab = (newTab) => {
       setSearchParams({ current_tab:newTab });
+      setInputValues([])
+      setIndicatorScore('')
       const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
       setData(datas)
     };  
@@ -101,9 +120,9 @@ import {URL} from '../../App'
         //Normalized Value Calculation
 
         inputValues.forEach((value) =>{
-          const hasCurrent = value.current !== undefined && value.current !== ''
-          const hasBest = value.best !== undefined && value.best !== ''
-          const hasWorst = value.worst !== undefined && value.worst !== ''
+          const hasCurrent = value.current !== null && value.current !== ''
+          const hasBest = value.best !== null && value.best !== ''
+          const hasWorst = value.worst !== null && value.worst !== ''
           // Check if all values are present & calculate accordingly
           if(hasCurrent && hasWorst && hasBest){
             const normalized = (value.current - value.worst) / (value.best - value.worst)
@@ -149,75 +168,75 @@ import {URL} from '../../App'
       calculation()
 
       try{
-        const response = await axios.post(`${URL}/EDI/postData`,payload)
+        const response = await axios.post(`${URL}/IDI/postData`,payload)
         console.log(response)
       }catch(err){
         console.log(err)
       }
     }
 
-    return (
-      <>
-      <Sidebar/>
-      <div className='key-ind1'>
-          <div className="container">
-            <div className="page-inner">
-              <div className="page-header">
-                {/* <ul className='breadcrumbs'>
-                  <li> Category 1 </li>
-                  <li style={{marginLeft:"10px"}}> --+ </li>
-                  <li style={{marginLeft:"10px"}}> {currentTab} </li>
-                </ul> */}
-              </div>
+  return (
+    <>
+    <SidebarIdi keyIndScore={keyIndScore}/>
+    <div className='key-ind1'>
+        <div className="container">
+          <div className="page-inner">
+            <div className="page-header">
+            <ul className='breadcrumbs'>
+                  <li onClick={() => handleNavigation("/category")}> Categories </li>
+                  <li style={{marginLeft:"10px"}}>  <img src={arrow} alt="icon" style={{height:'20px', width:'15px'}} className="nav-logo"/> </li>
+                  <li style={{marginLeft:"10px"}}> IDI </li>
+                </ul>
+            </div>
 
-              <div className='row-card'> 
-                <div className="card">
-                  <ul className='card-header'> 
-                  {dataset[splitPath[1]].map((data,index) =>{
-                    return(
-                      <li key={index} onClick={() => updateTab(data.tab)}>
-                      <button className={currentTab == `${data.tab}` ? 'active' : ''} >{data.indName}</button>
-                    </li>
-                    )
-                  })}
-                  </ul>
-                  <div className='card-line'> </div>
-                  <div className="card-body">
+            <div className='row-card'> 
+              <div className="card">
+                <ul className='card-header'> 
+                {dataset[splitPath[1]].map((data,index) =>{
+                  return(
+                    <li key={index} onClick={() => updateTab(data.tab)}>
+                    <button className={currentTab == `${data.tab}` ? 'active' : ''} >{data.indName}</button>
+                  </li>
+                  )
+                })}
+                </ul>
+                <div className='card-line'> </div>
+                <div className="card-body">
 
-                  <table>
-                      <thead>
-                        <tr>
-                          <th className='head-pad'>Sub indicators</th>
-                          <th>Current Value</th>
-                          <th>Worst Value</th>
-                          <th>Best Value</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {inputValues?.map((data,index) =>{
-                          return(
-                            <tr key={index}>
-                          <td>{data.subInd_name}</td>
-                          <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                          <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                          <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
-                        </tr>
-                          ) 
-                        })}
-                      </tbody>
-                  </table>
-                  </div>
-                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score of {data.indName}:  {indicatorScore}</div>}
-                  <div className='button-container'>
-                    <button className='submit-button' onClick={handleSubmit} >Calculate</button>
-                  </div>
+                <table>
+                    <thead>
+                      <tr>
+                        <th className='head-pad'>Sub indicators</th>
+                        <th>Current Value</th>
+                        <th>Worst Value</th>
+                        <th>Best Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {inputValues.map((data,index) =>{
+                        return(
+                          <tr key={index}>
+                        <td>{data.subInd_name}</td>
+                        <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                        <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                        <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                      </tr>
+                        ) 
+                      })}
+                    </tbody>
+                </table>
+                </div>
+                {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
+                <div className='button-container'>
+                  <button className='submit-button' onClick={handleSubmit} >Calculate</button>
                 </div>
               </div>
             </div>
           </div>
-      </div>
-      </>
-    )
-  }
+        </div>
+    </div>
+    </>
+  )
+}
 
-  export default KeyInd1
+export default IDI
