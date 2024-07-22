@@ -12,7 +12,7 @@ const Category = () => {
   return (
     <div className="category">
       <div className="category-container">
-        <button onClick={() => handleNavigation("/EDI/keyInd1")}>EDI</button>
+        <button onClick={() => handleNavigation("/EDI/keyInd1?current_tab=Ind1")}>EDI</button>
         <button onClick={() => handleNavigation("/IDI/keyInd1?current_tab=Ind1")}>IDI</button>
         <button onClick={() => handleNavigation("/CDI/keyInd1?current_tab=Ind1")}>CDI</button>
       </div>

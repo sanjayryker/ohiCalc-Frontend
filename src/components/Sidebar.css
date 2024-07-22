@@ -13,6 +13,7 @@
     height: auto;
     width: 100%;
     list-style-type: none;
+    margin-top: 30px;
 }
 
 .sidebar-list .row{
@@ -49,4 +50,8 @@
 
 .row .title{
     flex: 70%;
+}
+
+.title{
+    padding-left: 20px;
 }

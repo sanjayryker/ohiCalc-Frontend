@@ -1,56 +1,81 @@
-  import React, { useEffect, useState } from 'react';
-  import { useSearchParams, useLocation } from 'react-router-dom';
-  import Sidebar from '../../components/Sidebar'
-  import './KeyInd1.css'
-  import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import Sidebar from '../../components/Sidebar'
+import './KeyInd1.css'
+import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
+import axios from 'axios';
+import {URL} from '../../App'
 
   const KeyInd1 = () => {
 
-    const dataset = {
-      keyInd1: keyInd1_data,
-      keyInd2: keyInd2_data,
-      keyInd3: keyInd3_data,
-      keyInd4: keyInd4_data,
-      keyInd5: keyInd5_data,
-    }
+    const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data, keyInd4: keyInd4_data, keyInd5: keyInd5_data,}
 
     const location = useLocation()
     const [data,setData] = useState({})
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputValues, setInputValues] = useState([])
     const [indicatorScore,setIndicatorScore] = useState('')
+    const [keyIndScore,setKeyIndScore] = useState('')
 
     const currentTab = searchParams.get('current_tab');
 
     useEffect(() => {
+      fetchData()
+    }, [currentTab, setSearchParams, location.pathname]);
+
+    //Data fetch functions 
+    const fetchData = async() =>{
       if (!currentTab) {
         setSearchParams({ current_tab: 'Ind1' });
       }
-
       const datas = dataset[splitPath[1]].find(item => item.tab === currentTab);
       setData(datas)
-      if(datas){
-        const intialValues = datas.subInd.map((value,index) =>({
-          subInd : index+1,
-          subInd_name : value,
-          best:"",
-          worst:"",
-          current:"",
-          normalized_value:""
-        }))
-        setInputValues(intialValues)
-        setIndicatorScore('')
+      
+      const category = "EDI"
+      const key = splitPath[1]
+      const ind = currentTab
+      // console.log(category,key,ind)
+  
+      try{
+        const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
+        const fetchedData = response.data
+
+        if (fetchedData && fetchedData.values) {
+          const initialValues = fetchedData.values.map(value => ({
+            subInd: value.subInd,
+            subInd_name: value.subInd_name,
+            best: value.best,
+            worst: value.worst,
+            current: value.current,
+            normalized_value: value.normalized_value,
+          }));
+  
+          setInputValues(initialValues);
+          setIndicatorScore(fetchedData.ind_score);
+        }else{
+          const intialValues = datas.subInd.map((value,index) =>({
+            subInd : index+1,
+            subInd_name : value,
+            best:"",
+            worst:"",
+            current:"",
+            normalized_value:""
+          }))
+          setInputValues(intialValues)
+          setIndicatorScore('')
+        }
+        // console.log(response.data)
+      }catch(err){
+        console.error(err)
       }
-    }, [currentTab, setSearchParams, location.pathname]);
+    }
 
     //Splitting the URL
-
     const splitPath = location.pathname.split('/').filter(Boolean)
     const KeyIndicatorValue = splitPath[1].slice(-1)
     const indicatorValue = currentTab?.slice(-1)
 
     //Update current Tab Value
-
     const updateTab = (newTab) => {
       setSearchParams({ current_tab:newTab });
       const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
@@ -58,17 +83,15 @@
     };  
 
     //Handle Input box Changes
-
     const handleInputChange = (index,field,value) =>{
       setInputValues(preValues=>{
         const newValues = [...preValues]
         newValues[index][field]=value 
         return newValues
       })
-      // console.log(inputValues)
     }
 
-    const handleSubmit = () =>{
+    const handleSubmit = async() =>{
 
       const calculation = () =>{
 
@@ -91,7 +114,6 @@
             normalizedArray.push(0)
           }
         })
-        console.log(normalizedArray)
         
         //Update the Normalized values in the inputValues 
 
@@ -99,30 +121,39 @@
             ...item,
             normalized_value:normalizedArray[index]
           }));
+          payload.values = newValues
        
         // Normalized Value * Weights and Indicator score calculation
         normalizedArray.forEach((value) =>{
           const values = value * data.subInd_weight / 100 
-          normXweightArray.push(values)
+          normXweightArray.push(values) 
         })
-        console.log("weighted Array",normXweightArray)
 
         const reducedArray = normXweightArray.reduce((total, num) => total + num, 0)
+        payload.ind_score = reducedArray
         setIndicatorScore(reducedArray)
       }
-      calculation() 
 
       const payload = {
         category:splitPath[0],
         keyInd:KeyIndicatorValue,
+        keyInd_name:data.keyInd_name,
         ind_score:"",
         ind:indicatorValue,
         ind_name:data.indName,
-        status:false,
-        values:inputValues,
+        status:true,
+        values:[],
       }
-      //  console.log(payload)
-      // console.log(inputValues) 
+      console.log(payload)
+
+      calculation()
+
+      try{
+        const response = await axios.post(`${URL}/EDI/postData`,payload)
+        console.log(response)
+      }catch(err){
+        console.log(err)
+      }
     }
 
     return (
@@ -132,11 +163,11 @@
           <div className="container">
             <div className="page-inner">
               <div className="page-header">
-                <ul className='breadcrumbs'>
+                {/* <ul className='breadcrumbs'>
                   <li> Category 1 </li>
                   <li style={{marginLeft:"10px"}}> --+ </li>
                   <li style={{marginLeft:"10px"}}> {currentTab} </li>
-                </ul>
+                </ul> */}
               </div>
 
               <div className='row-card'> 
@@ -157,7 +188,7 @@
                       <thead>
                         <tr>
                           <th className='head-pad'>Sub indicators</th>
-                          <th>current Value</th>
+                          <th>Current Value</th>
                           <th>Worst Value</th>
                           <th>Best Value</th>
                         </tr>
@@ -176,7 +207,7 @@
                       </tbody>
                   </table>
                   </div>
-                  {indicatorScore !== '' &&  <div>Indicator Score is :{indicatorScore}</div>}
+                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score of {data.indName}:  {indicatorScore}</div>}
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
                   </div>

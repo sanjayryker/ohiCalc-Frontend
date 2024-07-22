@@ -3,9 +3,10 @@ import Navbar from './components/Navbar'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home/Home'
 import Category from './pages/Category/Category'
-import Sidebar from './components/Sidebar'
 import KeyInd1 from './pages/KeyIndicators/KeyInd1'
 import './App.css'
+
+export const URL = import.meta.env.VITE_SERVER_URL
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/dist/js/bootstrap.bundle.min';
 
