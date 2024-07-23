@@ -183,7 +183,7 @@ import { useNavigate } from 'react-router-dom';
             <div className="page-inner">
               <div className="page-header">
                 <ul className='breadcrumbs'>
-                  <li onClick={() => handleNavigation("/category")}> Categories </li>
+                  <li onClick={() => handleNavigation("/category")} style={{cursor:"pointer"}}> Categories </li>
                   <li style={{marginLeft:"10px"}}>  <img src={arrow} alt="icon" style={{height:'20px', width:'15px'}} className="nav-logo"/> </li>
                   <li style={{marginLeft:"10px"}}> EDI </li>
                 </ul>
