@@ -8,6 +8,7 @@ import IDI from './pages/KeyIndicators/IDI'
 import CDI from './pages/KeyIndicators/CDI'
 import './App.css'
 
+
 export const URL = import.meta.env.VITE_SERVER_URL
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -17,8 +18,8 @@ const App = () => {
     <div className='app'>
       <Navbar/>
       <Routes>
-        <Route path='/' element={<Home/>} />
-        <Route path='/category' element={<Category/>} />
+        <Route path='/' element={<Category/>} /> 
+        <Route path='/category' element={<Category/>}/>
         <Route path='/EDI/:page' element={<EDI/>} />
         <Route path='/IDI/:page' element={<IDI/>} />
         <Route path='/CDI/:page' element={<CDI/>} />

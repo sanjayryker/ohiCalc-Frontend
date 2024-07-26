@@ -25,7 +25,7 @@
     flex-direction: column;
     color: rgb(207, 201, 201);
     justify-content: center;
-    transition: 0.3s;
+    transition: background-color 0.5s, border-left 0.1s, color 0.3s;
 }
 
 .sidebar-list .row:hover{
@@ -43,15 +43,21 @@
 
 .title{
     padding-left: 20px;
+    transition: transform 0.3s, margin-top 0.3s;
 }
 
 .icon{
     padding-left: 20px;
-    padding-top: 10px;
     color:  #3BBA9C;
-    display: none;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s, margin-top 0.3s;
 }
 
 #actives{
     display: block;
+}
+
+.row.active .icon {
+    opacity: 1;
+    margin-top: 10px;
 }

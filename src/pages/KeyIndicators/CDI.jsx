@@ -7,6 +7,7 @@ import {URL} from '../../App'
 import SidebarCdi from '../../components/Sidebar-CDI';
 import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
+import SkeletonLoader from '../../components/SkeletonLoader';
 
 const CDI = () => {
 
@@ -17,7 +18,9 @@ const CDI = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputValues, setInputValues] = useState([])
     const [indicatorScore,setIndicatorScore] = useState('')
-    const [keyIndScore,setKeyIndScore] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
+    const [keyScore,setKeyScore] = useState('') // State for keyScore change we get from response
 
     const currentTab = searchParams.get('current_tab');
 
@@ -27,14 +30,21 @@ const CDI = () => {
     }, [currentTab, setSearchParams, location.pathname]);
 
     const navigate = useNavigate();
-
     const handleNavigation = (path) => {
-      navigate(path);
+      const splitpath = path.split('?')
+      //To prevent tab updation when clicking on same tab
+      if(splitpath[0] != location.pathname){
+        setInputValues([]);
+        setIndicatorScore('');
+        setData({});
+        navigate(path);
+      }
     };
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
       const response = await axios.get(`${URL}/api/keyIndScore/CDI`)
+      setKeyScore('')
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
       setKeyIndScore(keyScores)
@@ -42,6 +52,7 @@ const CDI = () => {
 
     //Data fetch functions 
     const fetchData = async() =>{
+      setIsLoading(true)
       if (!currentTab) {
         setSearchParams({ current_tab: 'Ind1' });
       }
@@ -69,6 +80,7 @@ const CDI = () => {
   
           setInputValues(initialValues);
           setIndicatorScore(fetchedData.ind_score);
+          setIsLoading(false)
         }else{
           const intialValues = datas.subInd.map((value,index) =>({
             subInd : index+1,
@@ -80,6 +92,7 @@ const CDI = () => {
           }))
           setInputValues(intialValues)
           setIndicatorScore('')
+          setIsLoading(false)
         }
         // console.log(response.data)
       }catch(err){
@@ -94,11 +107,13 @@ const CDI = () => {
 
     //Update current Tab Value
     const updateTab = (newTab) => {
-      setSearchParams({ current_tab:newTab });
-      setInputValues([])
-      setIndicatorScore('')
-      const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
-      setData(datas)
+      if(newTab !== currentTab){
+        setSearchParams({ current_tab:newTab });
+        setInputValues([])
+        setIndicatorScore('')
+        const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
+        setData(datas)
+      }
     };  
 
     //Handle Input box Changes
@@ -143,8 +158,8 @@ const CDI = () => {
           payload.values = newValues
        
         // Normalized Value * Weights and Indicator score calculation
-        normalizedArray.forEach((value,index) =>{
-          const values = value * data.subInd_weight[index] / 100 
+        normalizedArray.forEach((value) =>{
+          const values = value * data.subInd_weight/ 100 
           normXweightArray.push(values) 
         })
 
@@ -177,7 +192,7 @@ const CDI = () => {
 
   return (
     <>
-      <SidebarCdi keyIndScore={keyIndScore}/>
+      <SidebarCdi keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore}/>
       <div className='key-ind1'>
           <div className="container">
             <div className="page-inner">
@@ -213,7 +228,7 @@ const CDI = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {inputValues.map((data,index) =>{
+                        { !isLoading ?inputValues.map((data,index) =>{
                           return(
                             <tr key={index}>
                           <td>{data.subInd_name}</td>
@@ -222,7 +237,9 @@ const CDI = () => {
                           <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                         </tr>
                           ) 
-                        })}
+                        }):(  
+                          <SkeletonLoader/>
+                          )}
                       </tbody>
                   </table>
                   </div>

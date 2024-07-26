@@ -7,6 +7,8 @@ import {URL} from '../../App'
 import SidebarEdi from '../../components/SIdebar-EDI';
 import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
+import SkeletonLoader from '../../components/SkeletonLoader';
+
 
   const EDI = () => {
 
@@ -17,7 +19,9 @@ import { useNavigate } from 'react-router-dom';
     const [searchParams, setSearchParams] = useSearchParams();
     const [inputValues, setInputValues] = useState([])
     const [indicatorScore,setIndicatorScore] = useState('')
-    const [keyIndScore,setKeyIndScore] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
+    const [keyScore,setKeyScore] = useState('') // State for keyScore change we get from response
 
     const currentTab = searchParams.get('current_tab');
 
@@ -26,15 +30,25 @@ import { useNavigate } from 'react-router-dom';
       keyIndScoreFetch()
     }, [currentTab, setSearchParams, location.pathname]);
 
+  
+  //Navigate between keyInds
   const navigate = useNavigate();
-
   const handleNavigation = (path) => {
-    navigate(path);
+    const splitpath = path.split('?')
+    //To prevent tab updation when clicking on same tab
+    if(splitpath[0] != location.pathname){
+      setInputValues([]);
+      setIndicatorScore('');
+      setData({});
+      navigate(path);
+    }
   };
+
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
       const response = await axios.get(`${URL}/api/keyIndScore/EDI`)
+      setKeyScore('')
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
       setKeyIndScore(keyScores)
@@ -42,6 +56,8 @@ import { useNavigate } from 'react-router-dom';
 
     //Data fetch functions 
     const fetchData = async() =>{
+      setIsLoading(true)
+      
       if (!currentTab) {
         setSearchParams({ current_tab: 'Ind1' });
       }
@@ -56,7 +72,7 @@ import { useNavigate } from 'react-router-dom';
       try{
         const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
         const fetchedData = response.data
-
+        
         if (fetchedData && fetchedData.values) {
           const initialValues = fetchedData.values.map(value => ({
             subInd: value.subInd,
@@ -66,9 +82,10 @@ import { useNavigate } from 'react-router-dom';
             current: value.current,
             normalized_value: value.normalized_value,
           }));
-  
+          
           setInputValues(initialValues);
           setIndicatorScore(fetchedData.ind_score);
+          setIsLoading(false)
         }else{
           const intialValues = datas.subInd.map((value,index) =>({
             subInd : index+1,
@@ -80,6 +97,7 @@ import { useNavigate } from 'react-router-dom';
           }))
           setInputValues(intialValues)
           setIndicatorScore('')
+          setIsLoading(false)
         }
         // console.log(response.data)
       }catch(err){
@@ -94,11 +112,15 @@ import { useNavigate } from 'react-router-dom';
 
     //Update current Tab Value
     const updateTab = (newTab) => {
-      setSearchParams({ current_tab:newTab });
-      setInputValues([])
-      setIndicatorScore('')
-      const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
-      setData(datas)
+      //To prevent tab updation when clicking on same tab
+      if(newTab !== currentTab){
+        setSearchParams({ current_tab:newTab });
+        setInputValues([])
+        setIndicatorScore('')
+        const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
+        setData(datas)
+      }
+      
     };  
 
     //Handle Input box Changes
@@ -163,12 +185,13 @@ import { useNavigate } from 'react-router-dom';
         status:true,
         values:[],
       }
-      console.log(payload)
+      // console.log(payload)
 
       calculation()
 
       try{
         const response = await axios.post(`${URL}/EDI/postData`,payload)
+        setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
         console.log(err)
@@ -177,7 +200,7 @@ import { useNavigate } from 'react-router-dom';
 
     return (
       <>
-      <SidebarEdi keyIndScore={keyIndScore}/>
+      <SidebarEdi keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore}/>
       <div className='key-ind1'>
           <div className="container">
             <div className="page-inner">
@@ -213,16 +236,18 @@ import { useNavigate } from 'react-router-dom';
                         </tr>
                       </thead>
                       <tbody>
-                        {inputValues.map((data,index) =>{
+                        {!isLoading ?  inputValues.map((data,index) =>{
                           return(
-                            <tr key={index}>
-                          <td>{data.subInd_name}</td>
-                          <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                          <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                          <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                          <tr key={index}>
+                            <td>{data.subInd_name}</td>
+                            <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                            <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                            <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                         </tr>
                           ) 
-                        })}
+                        }):(  
+                        <SkeletonLoader/>
+                        )}
                       </tbody>
                   </table>
                   </div>

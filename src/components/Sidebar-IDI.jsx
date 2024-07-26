@@ -1,13 +1,12 @@
 import React, { Fragment } from "react";
 import "./Sidebar.css";
 import { SidebarIdiData } from "./SidebarData";
-import { useNavigate } from "react-router-dom";
 
-const SidebarIdi = ({keyIndScore}) => {
-  const navigate = useNavigate();
 
-  const handleNavigation = (path) => {
-    navigate(path);
+const SidebarIdi = ({keyIndScore,handleNavigation,keyScore}) => {
+
+  const navigation = (path) => {
+    handleNavigation(path)
   };
 
   return (
@@ -18,12 +17,12 @@ const SidebarIdi = ({keyIndScore}) => {
             <Fragment key={index}>
               <li
                 className="row"
-                onClick={() => { handleNavigation(value.path)}}
+                onClick={() => { navigation(value.path)}}
                 id={window.location.pathname == value.link ? "active" : ""}
               >
                 
                 <div className="title"> {value.title} </div>
-                {keyIndScore[index] && <div className="icon" id={window.location.pathname == value.link ? "actives" : ""}> Score: {keyIndScore[index]}</div>}
+                {keyIndScore[index] && <div className="icon" id={window.location.pathname == value.link ? "actives" : ""}> Score: {keyScore !== "" ? keyScore: keyIndScore[index]}</div>}
               </li>
             </Fragment>
           );

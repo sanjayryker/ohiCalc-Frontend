@@ -30,7 +30,7 @@
 
 
 /* Card.css */
-.car-list {
+.cards-list {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -38,32 +38,32 @@
     padding: 20px;
   }
   
-  .car {
+  .cards {
     min-height: 100%;
     margin-top: 30vh;
     width: 100%;
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
     padding: 20px;
     max-width: 300px;
     text-align: center;
   }
   
-  .car-heading {
+  .cards-heading {
     font-size: 24px;
     margin-bottom: 10px;
     color: #333;
   }
   
-  .car-text {
+  .cards-text {
     font-size: 16px;
     color: #666;
     margin-bottom: 20px;
     padding-top: 20px;
   }
   
-  .car button{
+  .cards button{
     background: transparent;
     font-size: 14px;
     color: black;
@@ -74,13 +74,13 @@
     transition: 0.3s;
 }
 
-.car button:hover{
+.cards button:hover{
     background-color:#3BBA9C;
     color: white;
     border: solid 0.5px #3BBA9C ;
 }
 
-  .car-abbr { /* New class for abbreviation */
+  .cards-abbr { /* New class for abbreviation */
     font-size: 14px;
     color: #999;
     margin-bottom: 10px;
