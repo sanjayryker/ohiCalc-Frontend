@@ -29,6 +29,7 @@ const IDI = () => {
       keyIndScoreFetch()
     }, [currentTab, setSearchParams, location.pathname]);
 
+    //Navigate between keyInds
     const navigate = useNavigate();
     const handleNavigation = (path) => {
       const splitpath = path.split('?')
@@ -107,6 +108,7 @@ const IDI = () => {
 
     //Update current Tab Value
     const updateTab = (newTab) => {
+      //To prevent tab updation when clicking on same tab
       if(newTab !== currentTab){
         setSearchParams({ current_tab:newTab });
         setInputValues([])
@@ -178,12 +180,13 @@ const IDI = () => {
         status:true,
         values:[],
       }
-      console.log(payload)
+      // console.log(payload)
 
       calculation()
 
       try{
         const response = await axios.post(`${URL}/IDI/postData`,payload)
+        setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
         console.log(err)
@@ -232,9 +235,9 @@ const IDI = () => {
                         return(
                           <tr key={index}>
                         <td>{data.subInd_name}</td>
-                        <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                        <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                        <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                        <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                        <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                        <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                       </tr>
                         ) 
                       }):(  

@@ -30,7 +30,6 @@ import SkeletonLoader from '../../components/SkeletonLoader';
       keyIndScoreFetch()
     }, [currentTab, setSearchParams, location.pathname]);
 
-  
   //Navigate between keyInds
   const navigate = useNavigate();
   const handleNavigation = (path) => {
@@ -57,7 +56,6 @@ import SkeletonLoader from '../../components/SkeletonLoader';
     //Data fetch functions 
     const fetchData = async() =>{
       setIsLoading(true)
-      
       if (!currentTab) {
         setSearchParams({ current_tab: 'Ind1' });
       }
@@ -240,9 +238,9 @@ import SkeletonLoader from '../../components/SkeletonLoader';
                           return(
                           <tr key={index}>
                             <td>{data.subInd_name}</td>
-                            <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                            <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                            <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                            <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                            <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                            <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  

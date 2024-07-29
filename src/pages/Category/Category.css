@@ -32,23 +32,29 @@
 /* Card.css */
 .cards-list {
     display: flex;
+    width: 80%;
+    margin: 0 auto;
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 20px;
-    padding: 20px;
   }
   
   .cards {
     min-height: 100%;
     margin-top: 30vh;
-    width: 100%;
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     padding: 20px;
     max-width: 300px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
+
+  .cards:hover {
+    transform: translateY(-10px);
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 20px 40px, rgba(0, 0, 0, 0.12) 0px 10px 20px;
+ }
   
   .cards-heading {
     font-size: 24px;
@@ -80,9 +86,20 @@
     border: solid 0.5px #3BBA9C ;
 }
 
-  .cards-abbr { /* New class for abbreviation */
+  .cards-abbr {
     font-size: 14px;
     color: #999;
     margin-bottom: 10px;
   }
+
+  .cards-score{
+    padding-bottom: 10px;
+    color: #3BBA9C;
+  }
   
+  .ohi-score {
+    font-size: 20px;
+    color: #333;
+    margin-top: 20px;
+    text-align: center;
+}

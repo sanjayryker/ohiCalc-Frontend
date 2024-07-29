@@ -15,7 +15,7 @@ const SidebarCdi = ({keyIndScore,handleNavigation,keyScore}) => {
           return (
             <Fragment key={index}>
               <li
-                className="row"
+                className={`row ${window.location.pathname == value.link ? "active" : ""}`}
                 onClick={() => {navigation(value.path)}}
                 id={window.location.pathname == value.link ? "active" : ""}
               >

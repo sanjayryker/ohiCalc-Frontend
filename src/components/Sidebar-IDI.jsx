@@ -5,6 +5,8 @@ import { SidebarIdiData } from "./SidebarData";
 
 const SidebarIdi = ({keyIndScore,handleNavigation,keyScore}) => {
 
+  
+
   const navigation = (path) => {
     handleNavigation(path)
   };
@@ -16,7 +18,7 @@ const SidebarIdi = ({keyIndScore,handleNavigation,keyScore}) => {
           return (
             <Fragment key={index}>
               <li
-                className="row"
+                className={`row ${window.location.pathname == value.link ? "active" : ""}`}
                 onClick={() => { navigation(value.path)}}
                 id={window.location.pathname == value.link ? "active" : ""}
               >

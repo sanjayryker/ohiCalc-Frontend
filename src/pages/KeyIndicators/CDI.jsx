@@ -184,6 +184,7 @@ const CDI = () => {
 
       try{
         const response = await axios.post(`${URL}/CDI/postData`,payload)
+        setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
         console.log(err)
@@ -232,9 +233,9 @@ const CDI = () => {
                           return(
                             <tr key={index}>
                           <td>{data.subInd_name}</td>
-                          <td><input type='text'value={data.current} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                          <td><input type='text'value={data.worst} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                          <td><input type='text'value={data.best} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                          <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                          <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                          <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  
