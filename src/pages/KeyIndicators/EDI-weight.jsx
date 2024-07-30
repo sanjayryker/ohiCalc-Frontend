@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import './EDI.css'
-import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './CDI-keyInd-Data';
+import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
 import axios from 'axios';
-import {URL} from '../../App'
+import { URL } from '../../App'
 import Sidebar from '../../components/Sidebar';
 import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
 import SkeletonLoader from '../../components/SkeletonLoader';
 
-const CDI = () => {
+const EDI_weight = () => {
 
-    const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data, keyInd4: keyInd4_data, keyInd5: keyInd5_data,}
+  const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data, keyInd4: keyInd4_data, keyInd5: keyInd5_data}
 
     const location = useLocation()
     const [data,setData] = useState({})
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams()
     const [inputValues, setInputValues] = useState([])
     const [indicatorScore,setIndicatorScore] = useState('')
     const [isLoading, setIsLoading] = useState(true)
@@ -29,21 +29,23 @@ const CDI = () => {
       keyIndScoreFetch()
     }, [currentTab, setSearchParams, location.pathname]);
 
-    const navigate = useNavigate();
-    const handleNavigation = (path) => {
-      const splitpath = path.split('?')
-      //To prevent tab updation when clicking on same tab
-      if(splitpath[0] != location.pathname){
-        setInputValues([]);
-        setIndicatorScore('');
-        setData({});
-        navigate(path);
-      }
-    };
+  //Navigate between keyInds
+  const navigate = useNavigate();
+  const handleNavigation = (path) => {
+    const splitpath = path.split('?')
+    //To prevent tab updation when clicking on same tab
+    if(splitpath[0] != location.pathname){
+      setInputValues([]);
+      setIndicatorScore('');
+      setData({});
+      navigate(path);
+    }
+  };
+
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
-      const response = await axios.get(`${URL}/api/keyIndScore/CDI`)
+      const response = await axios.get(`${URL}/api/keyIndScore/EDI`)
       setKeyScore('')
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
@@ -56,18 +58,18 @@ const CDI = () => {
       if (!currentTab) {
         setSearchParams({ current_tab: 'Ind1' });
       }
-      const datas = dataset[splitPath[1]].find(item => item.tab === currentTab);
+      const datas = dataset[splitPath[2]].find(item => item.tab === currentTab);
       setData(datas)
       
-      const category = "CDI"
-      const key = splitPath[1]
+      const category = "EDI"
+      const key = splitPath[2]
       const ind = currentTab
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/CDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
         const fetchedData = response.data
-
+        
         if (fetchedData && fetchedData.values) {
           const initialValues = fetchedData.values.map(value => ({
             subInd: value.subInd,
@@ -77,7 +79,7 @@ const CDI = () => {
             current: value.current,
             normalized_value: value.normalized_value,
           }));
-  
+          
           setInputValues(initialValues);
           setIndicatorScore(fetchedData.ind_score);
           setIsLoading(false)
@@ -102,18 +104,20 @@ const CDI = () => {
 
     //Splitting the URL
     const splitPath = location.pathname.split('/').filter(Boolean)
-    const KeyIndicatorValue = splitPath[1].slice(-1)
+    const KeyIndicatorValue = splitPath[2].slice(-1)
     const indicatorValue = currentTab?.slice(-1)
 
     //Update current Tab Value
     const updateTab = (newTab) => {
+      //To prevent tab updation when clicking on same tab
       if(newTab !== currentTab){
         setSearchParams({ current_tab:newTab });
         setInputValues([])
         setIndicatorScore('')
-        const datas = dataset[splitPath[1]].find(item => item.tab === newTab);
+        const datas = dataset[splitPath[2]].find(item => item.tab === newTab);
         setData(datas)
       }
+      
     };  
 
     //Handle Input box Changes
@@ -159,7 +163,7 @@ const CDI = () => {
        
         // Normalized Value * Weights and Indicator score calculation
         normalizedArray.forEach((value) =>{
-          const values = value * data.subInd_weight/ 100 
+          const values = value * data.subInd_weight / 100 
           normXweightArray.push(values) 
         })
 
@@ -178,12 +182,12 @@ const CDI = () => {
         status:true,
         values:[],
       }
-      console.log(payload)
+      // console.log(payload)
 
       calculation()
 
       try{
-        const response = await axios.post(`${URL}/CDI/postData`,payload)
+        const response = await axios.post(`${URL}/EDI/postData`,payload)
         setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
@@ -198,17 +202,17 @@ const CDI = () => {
           <div className="container">
             <div className="page-inner">
               <div className="page-header">
-              <ul className='breadcrumbs'>
+                <ul className='breadcrumbs'>
                   <li onClick={() => handleNavigation("/category")} style={{cursor:"pointer"}}> Categories </li>
                   <li style={{marginLeft:"10px"}}>  <img src={arrow} alt="icon" style={{height:'20px', width:'15px'}} className="nav-logo"/> </li>
-                  <li style={{marginLeft:"10px"}}> CDI </li>
+                  <li style={{marginLeft:"10px"}}> EDI </li>
                 </ul>
               </div>
 
               <div className='row-card'> 
                 <div className="card">
                   <ul className='card-header'> 
-                  {dataset[splitPath[1]].map((data,index) =>{
+                  {dataset[splitPath[2]].map((data,index) =>{
                     return(
                       <li key={index} onClick={() => updateTab(data.tab)}>
                       <button className={currentTab == `${data.tab}` ? 'active' : ''} >{data.indName}</button>
@@ -222,25 +226,25 @@ const CDI = () => {
                   <table>
                       <thead>
                         <tr>
-                          <th className='head-pad'>Sub indicators</th>
+                          <th className='head-pad'>Sethapayale</th>
                           <th>Current Value</th>
                           <th>Worst Value</th>
                           <th>Best Value</th>
                         </tr>
                       </thead>
                       <tbody>
-                        { !isLoading ?inputValues.map((data,index) =>{
+                        {!isLoading ?  inputValues.map((data,index) =>{
                           return(
-                            <tr key={index}>
-                          <td>{data.subInd_name}</td>
-                          <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                          <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                          <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                          <tr key={index}>
+                            <td>{data.subInd_name}</td>
+                            <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                            <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                            <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  
-                          <SkeletonLoader/>
-                          )}
+                        <SkeletonLoader/>
+                        )}
                       </tbody>
                   </table>
                   </div>
@@ -257,4 +261,4 @@ const CDI = () => {
   )
 }
 
-export default CDI
+export default EDI_weight

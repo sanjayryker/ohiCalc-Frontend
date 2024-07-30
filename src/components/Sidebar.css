@@ -35,7 +35,7 @@
     color: white;
 }
 
-.sidebar-list #active{
+.sidebar-list .active{
     background-color: #293846;
     border-left: 3px solid #3BBA9C;
     color: white;

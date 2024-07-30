@@ -4,10 +4,10 @@ import './EDI.css'
 import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
 import axios from 'axios';
 import {URL} from '../../App'
-import SidebarEdi from '../../components/SIdebar-EDI';
 import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
 import SkeletonLoader from '../../components/SkeletonLoader';
+import Sidebar from '../../components/Sidebar';
 
 
   const EDI = () => {
@@ -198,7 +198,7 @@ import SkeletonLoader from '../../components/SkeletonLoader';
 
     return (
       <>
-      <SidebarEdi keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore}/>
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]}/>
       <div className='key-ind1'>
           <div className="container">
             <div className="page-inner">

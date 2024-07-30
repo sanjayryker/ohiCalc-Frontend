@@ -7,6 +7,8 @@ import EDI from './pages/KeyIndicators/EDI'
 import IDI from './pages/KeyIndicators/IDI'
 import CDI from './pages/KeyIndicators/CDI'
 import './App.css'
+import ToggleSwitch from './components/ToggleSwitch'
+import EDI_weight from './pages/KeyIndicators/EDI-weight'
 
 
 export const URL = import.meta.env.VITE_SERVER_URL
@@ -18,11 +20,12 @@ const App = () => {
     <div className='app'>
       <Navbar/>
       <Routes>
-        <Route path='/' element={<Category/>} /> 
+        <Route path='/' element={<ToggleSwitch/>} /> 
         <Route path='/category' element={<Category/>}/>
         <Route path='/EDI/:page' element={<EDI/>} />
         <Route path='/IDI/:page' element={<IDI/>} />
         <Route path='/CDI/:page' element={<CDI/>} />
+        <Route path='/EDI/weight/:page' element={<EDI_weight/>}/>
       </Routes>
     </div>
   )
