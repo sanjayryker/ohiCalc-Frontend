@@ -12,7 +12,6 @@ const Category = () => {
     const saved = localStorage.getItem('isChecked');
     return saved === 'true'; 
   }); // State for button toggle
-  console.log(isChecked)
   const [mapData, setMapData] = useState([
     { id: 1, heading: 'EDI', abbr: "(External Drivers Index)", text: 'Used to asses the social, economic, cultural and other factors affecting One Health development', button: 'Calculate', path: "/EDI/keyInd1?current_tab=Ind1" , score: '' },
     { id: 2, heading: 'IDI', abbr: "(Intrinsic Drivers Index)", text: 'Formed to assess One Health Practice at the interfaces of human health, animal health and environment health', button: 'Calculate', path: "/IDI/keyInd1?current_tab=Ind1", score: '' },
@@ -49,8 +48,7 @@ const Category = () => {
   
     try{
     const response = await axios.get(`${URL}/api/CategoryScore/all`)
-    console.log(response)
-    const fetchedData = response.data;
+       const fetchedData = response.data;
 
     setData(response.data)
 

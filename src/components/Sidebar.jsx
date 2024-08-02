@@ -31,7 +31,7 @@ const Sidebar = ({keyIndScore,handleNavigation,keyScore,path}) => {
               >
                 
                 <div className="title"> {value.title} </div>
-                {keyIndScore[index] || keyScore && <div className="icon" id={window.location.pathname === currentLink ? "actives" : ""}> Score: {keyScore !== "" ? keyScore: keyIndScore[index]}</div>}
+                {(keyIndScore[index] || keyScore) && <div className="icon" id={window.location.pathname === currentLink ? "actives" : ""}> Score: {keyScore !== "" ? keyScore: keyIndScore[index]}</div>}
                 {/* <div> {`Score: ${keyIndScore[index]?keyIndScore[index]:'' }`} </div> */}
               </li>
             </Fragment>

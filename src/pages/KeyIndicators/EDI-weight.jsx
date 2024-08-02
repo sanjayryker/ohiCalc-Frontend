@@ -22,6 +22,11 @@ const EDI_weight = () => {
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState('') // State for keyScore change we get from response
 
+    //Error States
+    const [decimalError, setDecimalError]= useState(false)
+    const [totalError,setTotalError] = useState(false)
+    const [allWeightError, setAllWeightError] = useState(false)
+
     const currentTab = searchParams.get('current_tab');
 
     useEffect(() => {
@@ -41,7 +46,6 @@ const EDI_weight = () => {
       navigate(path);
     }
   };
-
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
@@ -69,6 +73,8 @@ const EDI_weight = () => {
       try{
         const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
         const fetchedData = response.data
+
+        const equalWeight = (Math.floor((100 / datas.subInd.length) * 100) / 100).toFixed(2)
         
         if (fetchedData && fetchedData.values) {
           const initialValues = fetchedData.values.map(value => ({
@@ -78,8 +84,8 @@ const EDI_weight = () => {
             worst: value.worst,
             current: value.current,
             normalized_value: value.normalized_value,
+            weight:value.weight ? value.weight : equalWeight,
           }));
-          
           setInputValues(initialValues);
           setIndicatorScore(fetchedData.ind_score);
           setIsLoading(false)
@@ -90,7 +96,8 @@ const EDI_weight = () => {
             best:"",
             worst:"",
             current:"",
-            normalized_value:""
+            normalized_value:"",
+            weight:equalWeight,
           }))
           setInputValues(intialValues)
           setIndicatorScore('')
@@ -129,9 +136,16 @@ const EDI_weight = () => {
       })
     }
 
+    // ---------------------------------Submit Function  ----------------------------------------
+
     const handleSubmit = async() =>{
 
-      const calculation = () =>{
+      let weightArray = []
+      let hasAllWeightError = false;
+      let hasDecimalError = false;
+      let hasTotalError = false;
+
+      const calculation = async() =>{
 
         let normalizedArray = []
         let normXweightArray = []
@@ -142,6 +156,26 @@ const EDI_weight = () => {
           const hasCurrent = value.current !== null && value.current !== ''
           const hasBest = value.best !== null && value.best !== ''
           const hasWorst = value.worst !== null && value.worst !== ''
+          const hasWeight = value.weight !== null && value.weight !== ''
+
+          // weights are checked for 2 decimal values after . and  pushed to an array accordingly 
+          if (hasWeight) {
+            const weight = value.weight;
+            const weightStr = weight.toString();
+            const decimalIndex = weightStr.indexOf('.');
+            
+            if (decimalIndex === -1) {
+              // If it is not a decimal, push it
+              weightArray.push(Number(weight));
+            }else {
+              const decimalPart = weightStr.split('.')[1];
+              weightArray.push(decimalPart && decimalPart.length === 2 ? Number(weight) : 1);  // Push one if not two decimal
+            }
+
+          } else if(!hasWeight || value.weight === 0) {
+            weightArray.push(0); // push 0 if no weights or 0
+          }
+
           // Check if all values are present & calculate accordingly
           if(hasCurrent && hasWorst && hasBest){
             const normalized = (value.current - value.worst) / (value.best - value.worst)
@@ -152,24 +186,57 @@ const EDI_weight = () => {
             normalizedArray.push(0)
           }
         })
-        
-        //Update the Normalized values in the inputValues 
 
-          const newValues = inputValues.map((item,index) =>({
-            ...item,
-            normalized_value:normalizedArray[index]
-          }));
-          payload.values = newValues
-       
-        // Normalized Value * Weights and Indicator score calculation
-        normalizedArray.forEach((value) =>{
-          const values = value * data.subInd_weight / 100 
+        // Check the weighted array for 0 or 1 and throw err (0 means no value,  1 means not two values after '.' )
+        const weightArrayCheck0 = weightArray.includes(0);
+        const weightArrayCheck1 = weightArray.includes(1);
+
+        if (weightArrayCheck0) {
+          hasAllWeightError = true;
+        } else if (weightArrayCheck1) {
+          hasDecimalError = true;
+
+        } else {
+          // Check if weights add up to 100 and impose error
+          const weightTotal = weightArray.reduce((a, b) => a + b, 0);
+          hasTotalError = Math.round(weightTotal) !== 100;
+          setTotalError(Math.round(weightTotal) !== 100);
+        } 
+
+        //Update the Normalized values in the inputValues 
+        const newValues = inputValues.map((item,index) =>({
+          ...item,
+          normalized_value:normalizedArray[index]
+        }));
+        payload.values = newValues
+
+        
+        if(!hasAllWeightError && !hasDecimalError && !hasTotalError)
+        {
+          // Normalized Value * Weights and Indicator score calculation
+          normalizedArray.forEach((value,index) =>{
+          const values = value * weightArray[index]/ 100 
           normXweightArray.push(values) 
         })
 
         const reducedArray = normXweightArray.reduce((total, num) => total + num, 0)
         payload.ind_score = reducedArray
         setIndicatorScore(reducedArray)
+
+        setDecimalError(hasDecimalError);
+        setAllWeightError(hasAllWeightError);
+        setTotalError(hasTotalError); 
+
+        // try{
+        //   const response = await axios.post(`${URL}/EDI/postData`,payload)
+        //   setKeyScore(response.data.keyScore)
+        //   console.log(response)
+        // }catch(err){
+        // console.log(err)
+        //   }
+        }
+
+       
       }
 
       const payload = {
@@ -182,17 +249,11 @@ const EDI_weight = () => {
         status:true,
         values:[],
       }
-      // console.log(payload)
+      console.log(payload)
 
       calculation()
 
-      try{
-        const response = await axios.post(`${URL}/EDI/postData`,payload)
-        setKeyScore(response.data.keyScore)
-        console.log(response)
-      }catch(err){
-        console.log(err)
-      }
+      
     }
 
   return (
@@ -230,6 +291,7 @@ const EDI_weight = () => {
                           <th>Current Value</th>
                           <th>Worst Value</th>
                           <th>Best Value</th>
+                          <th> Weight </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -240,6 +302,7 @@ const EDI_weight = () => {
                             <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
                             <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
                             <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                            <td><input type='text'value={data.weight || ''} onChange={(e)=> handleInputChange(index,"weight",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  
@@ -249,6 +312,9 @@ const EDI_weight = () => {
                   </table>
                   </div>
                   {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
+                  {totalError ? <div style={{color:"red"}} > Weights must add up to a total of 100 </div> : <></>}
+                  {decimalError ? <div style={{color:"red"}} > Weights must contain only two decimal points </div> : <></> }
+                  {allWeightError ? <div style={{color:"red"}} > Weights should not be empty or zero </div> : <></> } 
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
                   </div>
