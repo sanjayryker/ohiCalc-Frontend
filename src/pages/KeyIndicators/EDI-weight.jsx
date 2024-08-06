@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
-import './EDI.css'
+import './EDI-weight.css'
 import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
 import axios from 'axios';
 import { URL } from '../../App'
 import Sidebar from '../../components/Sidebar';
 import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
-import SkeletonLoader from '../../components/SkeletonLoader';
+import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight';
 
 const EDI_weight = () => {
 
@@ -17,6 +17,7 @@ const EDI_weight = () => {
     const [data,setData] = useState({})
     const [searchParams, setSearchParams] = useSearchParams()
     const [inputValues, setInputValues] = useState([])
+    const [indicatorWeight, setIndicatorWeight] = useState('')
     const [indicatorScore,setIndicatorScore] = useState('')
     const [isLoading, setIsLoading] = useState(true)
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
@@ -26,6 +27,10 @@ const EDI_weight = () => {
     const [decimalError, setDecimalError]= useState(false)
     const [totalError,setTotalError] = useState(false)
     const [allWeightError, setAllWeightError] = useState(false)
+
+    const [indicatorDecimalError, setIndicatorDecimalError] = useState(false);
+    const [indicatorTotalError, setIndicatorTotalError] = useState(false);
+    const [indicatorEmptyError, setIndicatorEmptyError] = useState(false);
 
     const currentTab = searchParams.get('current_tab');
 
@@ -49,7 +54,14 @@ const EDI_weight = () => {
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
-      const response = await axios.get(`${URL}/api/keyIndScore/EDI`)
+
+      setDecimalError(false)
+      setTotalError(false)
+      setAllWeightError(false)
+      setIndicatorDecimalError(false);
+      setIndicatorEmptyError(false);
+
+      const response = await axios.get(`${URL}/weight/api/keyIndScore/EDI`)
       setKeyScore('')
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
@@ -71,7 +83,7 @@ const EDI_weight = () => {
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/weight/EDI/getData`,{category,key,ind})
         const fetchedData = response.data
 
         const equalWeight = (Math.floor((100 / datas.subInd.length) * 100) / 100).toFixed(2)
@@ -86,6 +98,7 @@ const EDI_weight = () => {
             normalized_value: value.normalized_value,
             weight:value.weight ? value.weight : equalWeight,
           }));
+          setIndicatorWeight(fetchedData.ind_weight)
           setInputValues(initialValues);
           setIndicatorScore(fetchedData.ind_score);
           setIsLoading(false)
@@ -100,6 +113,7 @@ const EDI_weight = () => {
             weight:equalWeight,
           }))
           setInputValues(intialValues)
+          setIndicatorWeight('')
           setIndicatorScore('')
           setIsLoading(false)
         }
@@ -136,14 +150,52 @@ const EDI_weight = () => {
       })
     }
 
+    // Indicator Weight Checker
+    const validateIndicatorWeight = () => {
+      setIndicatorDecimalError(false);
+      setIndicatorEmptyError(false);
+      setIndicatorTotalError(false);
+    
+      if (indicatorWeight == '' || indicatorWeight == null || indicatorWeight == 0) {
+        setIndicatorEmptyError(true);
+        return false;
+      }
+      const weightStr = indicatorWeight.toString();
+      const decimalIndex = weightStr.indexOf('.');
+    
+      if (decimalIndex !== -1) {
+        const decimalPart = weightStr.split('.')[1];
+        if (decimalPart && decimalPart.length !== 2) {
+          setIndicatorDecimalError(true);
+          return false;
+        }
+      }
+
+      // if(indicatorWeight > 100){
+      //   setIndicatorTotalError(true);
+      //   return false
+      // }
+      return true;
+    };
+    
+
     // ---------------------------------Submit Function  ----------------------------------------
 
     const handleSubmit = async() =>{
 
       let weightArray = []
+      setDecimalError(false)
+      setTotalError(false)
+      setAllWeightError(false)
+      
       let hasAllWeightError = false;
       let hasDecimalError = false;
       let hasTotalError = false;
+
+       // Validate Indicator Weight
+      if (!validateIndicatorWeight()) {
+        return;
+      }
 
       const calculation = async() =>{
 
@@ -187,14 +239,14 @@ const EDI_weight = () => {
           }
         })
 
-        // Check the weighted array for 0 or 1 and throw err (0 means no value,  1 means not two values after '.' )
-        const weightArrayCheck0 = weightArray.includes(0);
-        const weightArrayCheck1 = weightArray.includes(1);
+        // // Check the weighted array for 0 or 1 and throw err (0 means no value,  1 means not two values after '.' )
 
-        if (weightArrayCheck0) {
+        if (weightArray.includes(0)) {
           hasAllWeightError = true;
-        } else if (weightArrayCheck1) {
+          setAllWeightError(hasAllWeightError);
+        } else if (weightArray.includes(1)) {
           hasDecimalError = true;
+          setDecimalError(hasDecimalError);
 
         } else {
           // Check if weights add up to 100 and impose error
@@ -223,20 +275,20 @@ const EDI_weight = () => {
         payload.ind_score = reducedArray
         setIndicatorScore(reducedArray)
 
-        setDecimalError(hasDecimalError);
-        setAllWeightError(hasAllWeightError);
-        setTotalError(hasTotalError); 
+        try{
+          const response = await axios.post(`${URL}/weight/EDI/postData`,payload)
+          setKeyScore(response.data.keyScore)
+          console.log(response)
+        }catch (err) {
+          if (err.response && err.response.data && err.response.data.msg === "Weights must add up to 100.") {
+            setIndicatorTotalError(true);
+          }else {
+             console.log(err)
+            }
+          }
 
-        // try{
-        //   const response = await axios.post(`${URL}/EDI/postData`,payload)
-        //   setKeyScore(response.data.keyScore)
-        //   console.log(response)
-        // }catch(err){
-        // console.log(err)
-        //   }
+        console.log(payload)
         }
-
-       
       }
 
       const payload = {
@@ -246,13 +298,12 @@ const EDI_weight = () => {
         ind_score:"",
         ind:indicatorValue,
         ind_name:data.indName,
+        ind_weight:indicatorWeight,
         status:true,
         values:[],
       }
-      console.log(payload)
-
+      
       calculation()
-
       
     }
 
@@ -287,11 +338,11 @@ const EDI_weight = () => {
                   <table>
                       <thead>
                         <tr>
-                          <th className='head-pad'>Sethapayale</th>
+                          <th className='head-pad'>Sub Indicators</th>
                           <th>Current Value</th>
                           <th>Worst Value</th>
                           <th>Best Value</th>
-                          <th> Weight </th>
+                          <th> Weight (%) </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -306,18 +357,24 @@ const EDI_weight = () => {
                         </tr>
                           ) 
                         }):(  
-                        <SkeletonLoader/>
+                        <SkeletonLoaderWeight/>
                         )}
                       </tbody>
                   </table>
                   </div>
-                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
-                  {totalError ? <div style={{color:"red"}} > Weights must add up to a total of 100 </div> : <></>}
-                  {decimalError ? <div style={{color:"red"}} > Weights must contain only two decimal points </div> : <></> }
-                  {allWeightError ? <div style={{color:"red"}} > Weights should not be empty or zero </div> : <></> } 
+                  <div className='card-line'> </div>
+                  <div className='indicator_weight'>Weightage of the indicator - {data.indName} (%) <input value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='text' /> </div>
+                  {indicatorTotalError ? <div className = "errors">Ind Weight must add up to a total of 100</div> : null}
+                  {indicatorDecimalError ? <div className = "errors">Ind Weight must contain only two decimal points</div> : null}
+                  {indicatorEmptyError ? <div className = "errors">Ind Weight should not be empty or zero</div>:null }
+
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
                   </div>
+                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
+                  {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}
+                  {decimalError ? <div className = "errors" > Weights must contain only two decimal points </div> : null}
+                  {allWeightError ? <div className = "errors" > Weights should not be empty or zero </div> : null }
                 </div>
               </div>
             </div>

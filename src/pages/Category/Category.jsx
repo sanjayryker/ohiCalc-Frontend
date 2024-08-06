@@ -23,12 +23,9 @@ const Category = () => {
     navigate(path);
   };
 
-  useEffect(() =>{
-    fetchData()
-  },[])
-
   // Update mapData whenever isChecked changes
   useEffect(() => {
+    fetchData()
     setMapData(prevData => prevData.map(item => {
       if (item.heading === 'EDI') {
         return { ...item, path: !isChecked ? "/EDI/keyInd1?current_tab=Ind1" : "/EDI/weight/keyInd1?current_tab=Ind1" };
@@ -47,8 +44,8 @@ const Category = () => {
   const fetchData = async() =>{
   
     try{
-    const response = await axios.get(`${URL}/api/CategoryScore/all`)
-       const fetchedData = response.data;
+    const response = await axios.get(isChecked ? `${URL}/weight/api/CategoryScore/all` : `${URL}/api/CategoryScore/all`)
+    const fetchedData = response.data;
 
     setData(response.data)
 
