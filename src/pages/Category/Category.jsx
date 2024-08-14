@@ -48,6 +48,7 @@ const Category = () => {
     const fetchedData = response.data;
 
     setData(response.data)
+    console.log(response.data)
 
     //Update mapData with the scores we fetched
 
@@ -76,7 +77,7 @@ const Category = () => {
             <h2 className="cards-heading">{value.heading}</h2>
             <div className="cards-abbr">{value.abbr}</div>
             <p className="cards-text">{value.text}</p>
-            <p className="cards-score">Score: {value.score}</p>
+            <p className="cards-score"> {value.score !== null ? `Score: ${value.score}` : "Score: Yet to be calculated" }</p>
             <button className="cards-button" onClick={() => handleNavigation(value.path)}>{value.button}</button>
           </div>
         ))}
@@ -84,8 +85,7 @@ const Category = () => {
       { data.OhiScore ? <div className="ohi-score">OHI Score : {data?.OhiScore}</div> : <></> }
       
     </>
-
-
+    
   );
 };
 

@@ -15,7 +15,7 @@ const ToggleSwitch = ({isChecked,setIsChecked}) => {
         checked={isChecked}
         onChange={handleToggle}
       />
-      <label htmlFor="switch">
+      <label htmlFor="switch" className='switch'>
         {isChecked ? 'On' : 'Off'}
       </label>
     </div>

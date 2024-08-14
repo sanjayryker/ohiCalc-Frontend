@@ -23,6 +23,7 @@ import Sidebar from '../../components/Sidebar';
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState('') // State for keyScore change we get from response
 
+    const modal = false
     const currentTab = searchParams.get('current_tab');
 
     useEffect(() => {
@@ -198,7 +199,7 @@ import Sidebar from '../../components/Sidebar';
 
     return (
       <>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]}/>
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} modal={modal}/>
       <div className='key-ind1'>
           <div className="container">
             <div className="page-inner">

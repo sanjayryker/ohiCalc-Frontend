@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import './EDI-weight.css'
-import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './EDI-keyInd-Data';
+import { keyInd1_data, keyInd2_data, keyInd3_data } from './IDI-keyInd-Data';
 import axios from 'axios';
 import { URL } from '../../App'
 import Sidebar from '../../components/Sidebar';
@@ -9,9 +9,9 @@ import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
 import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight';
 
-const EDI_weight = () => {
+const IDI_weight = () => {
 
-  const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data, keyInd4: keyInd4_data, keyInd5: keyInd5_data}
+  const dataset = { keyInd1: keyInd1_data, keyInd2: keyInd2_data, keyInd3: keyInd3_data}
 
     const location = useLocation()
     const [data,setData] = useState({})
@@ -69,7 +69,7 @@ const EDI_weight = () => {
       setIndicatorDecimalError(false);
       setIndicatorEmptyError(false);
 
-      const response = await axios.get(`${URL}/weight/api/keyIndScore/EDI`)
+      const response = await axios.get(`${URL}/weight/api/keyIndScore/IDI`)
       setKeyScore('')
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
@@ -85,16 +85,17 @@ const EDI_weight = () => {
       const datas = dataset[splitPath[2]].find(item => item.tab === currentTab);
       setData(datas)
       
-      const category = "EDI"
+      const category = "IDI"
       const key = splitPath[2]
       const ind = currentTab
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/weight/EDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/weight/IDI/getData`,{category,key,ind})
         const fetchedData = response.data
 
-        const equalWeight = (Math.floor((100 / datas.subInd.length) * 100) / 100).toFixed(2)
+        const equalSubWeight = (Math.floor((100 / datas.subInd.length) * 100) / 100).toFixed(2)
+        // const equalIndWeight = (Math.floor((100 / dataset[splitPath[2]].length ) * 100) / 100).toFixed(2)
         
         if (fetchedData && fetchedData.values) {
           const initialValues = fetchedData.values.map(value => ({
@@ -104,7 +105,7 @@ const EDI_weight = () => {
             worst: value.worst,
             current: value.current,
             normalized_value: value.normalized_value,
-            weight:value.weight ? value.weight : equalWeight,
+            weight:value.weight ? value.weight : equalSubWeight,
           }));
           setIndicatorWeight(fetchedData.ind_weight)
           setInputValues(initialValues);
@@ -118,7 +119,7 @@ const EDI_weight = () => {
             worst:"",
             current:"",
             normalized_value:"",
-            weight:equalWeight,
+            weight:equalSubWeight,
           }))
           setInputValues(intialValues)
           setIndicatorWeight('')
@@ -284,7 +285,7 @@ const EDI_weight = () => {
         setIndicatorScore(reducedArray)
 
         try{
-          const response = await axios.post(`${URL}/weight/EDI/postData`,payload)
+          const response = await axios.post(`${URL}/weight/IDI/postData`,payload)
           setKeyScore(response.data.keyScore)
           console.log(response)
         }catch (err) {
@@ -325,7 +326,7 @@ const EDI_weight = () => {
                 <ul className='breadcrumbs'>
                   <li onClick={() => handleNavigation("/category")} style={{cursor:"pointer"}}> Categories </li>
                   <li style={{marginLeft:"10px"}}>  <img src={arrow} alt="icon" style={{height:'20px', width:'15px'}} className="nav-logo"/> </li>
-                  <li style={{marginLeft:"10px"}}> EDI </li>
+                  <li style={{marginLeft:"10px"}}> IDI </li>
                 </ul>
               </div>
 
@@ -392,4 +393,4 @@ const EDI_weight = () => {
   )
 }
 
-export default EDI_weight
+export default IDI_weight
