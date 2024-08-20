@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { useSearchParams, useLocation } from 'react-router-dom'
 import './EDI-weight.css'
-import { keyInd1_data, keyInd2_data, keyInd3_data,keyInd4_data, keyInd5_data } from './CDI-keyInd-Data';
-import axios from 'axios';
+import { keyInd1_data, keyInd2_data, keyInd3_data, keyInd4_data, keyInd5_data } from './CDI-keyInd-Data'
+import axios from 'axios'
 import { URL } from '../../App'
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/Sidebar'
 import arrow from '../../assets/right_arrow.png'
-import { useNavigate } from 'react-router-dom';
-import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight';
+import { useNavigate } from 'react-router-dom'
+import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import { toast } from 'react-toastify'
 
 const CDI_weight = () => {
 
@@ -21,7 +24,8 @@ const CDI_weight = () => {
     const [indicatorScore,setIndicatorScore] = useState('')
     const [isLoading, setIsLoading] = useState(true)
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
-    const [keyScore,setKeyScore] = useState('') // State for keyScore change we get from response
+    const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
+    const [keyIndLength, setKeyIndLength]=useState(false) // state to display keyInd Weight button
 
     //Error States
     const [decimalError, setDecimalError]= useState(false)
@@ -70,9 +74,11 @@ const CDI_weight = () => {
       setIndicatorEmptyError(false);
 
       const response = await axios.get(`${URL}/weight/api/keyIndScore/CDI`)
-      setKeyScore('')
+      setKeyScore(null)
+      setKeyIndLength(false)
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
+      if(keyScores.length === 5) setKeyIndLength(true)
       setKeyIndScore(keyScores)
     }
 
@@ -284,17 +290,24 @@ const CDI_weight = () => {
         setIndicatorScore(reducedArray)
 
         try{
-          const response = await axios.post(`${URL}/weight/CDI/postData`,payload)
+          const response = await toast.promise(
+            axios.post(`${URL}/weight/CDI/postData`,payload),{
+              pending: 'Submitting data'
+            }
+          )
+          toast.success(response.data.message)
           setKeyScore(response.data.keyScore)
+          setKeyIndLength(response.data.keyLength)
           console.log(response)
         }catch (err) {
           if (err.response && err.response.data && err.response.data.msg === "Weights must add up to 100.") {
+            toast.error("Indicator weights must add up to a total of 100")
             setIndicatorTotalError(true);
           }else {
              console.log(err)
+             toast.error("Failed to submit data")
             }
           }
-
         console.log(payload)
         }
       }
@@ -318,7 +331,7 @@ const CDI_weight = () => {
   return (
     <>
       <div className='key-ind1'>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} modal={modal} />
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} modal={modal} keyIndLength={keyIndLength} />
           <div className="container">
             <div className="page-inner">
               <div className="page-header">
@@ -358,10 +371,10 @@ const CDI_weight = () => {
                           return(
                           <tr key={index}>
                             <td>{data.subInd_name}</td>
-                            <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                            <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                            <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
-                            <td><input type='text'value={data.weight || ''} onChange={(e)=> handleInputChange(index,"weight",e.target.value)} /></td>
+                            <td><input type='number'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                            <td><input type='number'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                            <td><input type='number'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                            <td><input type='number'value={data.weight || ''} onChange={(e)=> handleInputChange(index,"weight",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  
@@ -371,7 +384,8 @@ const CDI_weight = () => {
                   </table>
                   </div>
                   <div className='card-line'> </div>
-                  <div className='indicator_weight'>Weightage of the indicator - {data.indName} (%) <input value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='text' /> </div>
+                  {!isLoading ?<div className='indicator_weight'>Weightage of the indicator - {data.indName} (%) <input value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='text' /> </div>
+                   : <div className='indicator_weight'><Skeleton style={{width:"100px", height:"27.6px"}}/> </div>}
                   {indicatorTotalError ? <div className = "errors">Ind Weight must add up to a total of 100</div> : null}
                   {indicatorDecimalError ? <div className = "errors">Ind Weight must contain only two decimal points</div> : null}
                   {indicatorEmptyError ? <div className = "errors">Ind Weight should not be empty or zero</div>:null }

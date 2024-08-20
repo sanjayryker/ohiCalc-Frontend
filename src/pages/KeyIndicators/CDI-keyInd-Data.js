@@ -153,7 +153,7 @@ export const keyInd4_data = [
         tab:'Ind3',
         keyInd_name:"Antimicrobial resistance",
         indName:'Antimicrobial control and optimization',
-        subInd:['National law for antibiotic use','Optimization of antimicrobial resistance transmission'],
+        subInd:['National law for antibiotic use','Optimization of antimicrobial resistance transmission','Interruption capacity of antimicrobial resistance transmission'],
         subInd_weight:50
     },
     {

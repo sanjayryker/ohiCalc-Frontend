@@ -101,7 +101,7 @@ export const keyInd3_data = [
         tab:'Ind4',
         keyInd_name:"Environmental Health",
         indName:'Hazardous chemicals',
-        subInd:['Fertilizer consumption','Controlled solid waste', 'So2 growth','Nox growth','Electronic waste','Non-recycled municipal solid waste'],
+        subInd:['Fertilizer consumption','Controlled solid waste', 'So2 growth','Nox growth','Wastewater treatment','Electronic waste','Non-recycled municipal solid waste'],
         subInd_weight:"14.28",
     },
     {

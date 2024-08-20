@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import './weightModal.css'
-import axios from "axios";
+import axios from "axios"
 import {URL} from '../App'
+import { toast } from 'react-toastify'
 
 
 const WeightModal = ({ show, handleClose, selectedDataset,path }) => {
@@ -15,7 +16,7 @@ const WeightModal = ({ show, handleClose, selectedDataset,path }) => {
     const [allWeightError, setAllWeightError] = useState(false)
 
     useEffect(() =>{
-            fetchData()
+      fetchData()
     },[path])
 
     const fetchData = async()=>{
@@ -107,12 +108,20 @@ const WeightModal = ({ show, handleClose, selectedDataset,path }) => {
       if(!hasAllWeightError && !hasDecimalError && !hasTotalError){
 
         try {
-          const response = await axios.post(`${URL}/weight/api/keyIndWeight/post`, payload);
+          const response = await toast.promise(
+            axios.post(`${URL}/weight/api/keyIndWeight/post`, payload),{
+              pending: 'Submitting weights',
+              success: 'Weights submitted successfully!',
+              // error: 'Failed to submit weights!',
+            }
+          )
           console.log(response.data);
+          handleClose();
         } catch (error) {
-      console.error('Error submitting weights:', error);
+      // console.error('Error submitting weights:', error);
+      toast.error("Failed to submit weights, Check your network connection")
     }
-      //   handleClose();
+      
       }
       
     };

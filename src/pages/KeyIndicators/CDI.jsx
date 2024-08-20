@@ -20,7 +20,7 @@ const CDI = () => {
     const [indicatorScore,setIndicatorScore] = useState('')
     const [isLoading, setIsLoading] = useState(true)
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
-    const [keyScore,setKeyScore] = useState('') // State for keyScore change we get from response
+    const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
 
     const currentTab = searchParams.get('current_tab');
 
@@ -44,7 +44,7 @@ const CDI = () => {
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
       const response = await axios.get(`${URL}/api/keyIndScore/CDI`)
-      setKeyScore('')
+      setKeyScore(null)
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
       setKeyIndScore(keyScores)
@@ -233,9 +233,9 @@ const CDI = () => {
                           return(
                             <tr key={index}>
                           <td>{data.subInd_name}</td>
-                          <td><input type='text'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
-                          <td><input type='text'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
-                          <td><input type='text'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
+                          <td><input type='number'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
+                          <td><input type='number'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
+                          <td><input type='number'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  

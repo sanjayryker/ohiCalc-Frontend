@@ -103,3 +103,21 @@
     margin-top: 20px;
     text-align: center;
 }
+
+.open-modal-button {
+  background-color:#3BBA9C;
+  font-size: 14px;
+  color: white;
+  border: solid 0.5px #3BBA9C ;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 20px;
+  transition: 0.5s all ease;
+}
+
+.open-modal-button:hover {
+  transform: scale(1.08);
+}
