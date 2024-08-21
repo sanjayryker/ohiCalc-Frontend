@@ -11,6 +11,8 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight';
 import { toast } from 'react-toastify'
+import PieChart from '../../components/PieChart'
+import { SlGraph } from "react-icons/sl";
 
 const IDI_weight = () => {
 
@@ -26,7 +28,7 @@ const IDI_weight = () => {
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
     const [keyIndLength, setKeyIndLength]=useState(false) // state to display keyInd Weight button
-
+    const [showModal, setShowModal] = useState(false)
     //Error States
     const [decimalError, setDecimalError]= useState(false)
     const [totalError,setTotalError] = useState(false)
@@ -63,6 +65,10 @@ const IDI_weight = () => {
   //   const response = await axios.post(`${URL}/weight/api/keyIndWeight/post`,path)
   //   console.log(response)
   // }
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
@@ -107,9 +113,9 @@ const IDI_weight = () => {
           const initialValues = fetchedData.values.map(value => ({
             subInd: value.subInd,
             subInd_name: value.subInd_name,
-            best: value.best,
-            worst: value.worst,
-            current: value.current,
+            best: value.best === 0 ? "0" : value.best,
+            worst: value.worst === 0 ? "0" : value.worst,
+            current:  value.current === 0 ? "0" : value.current,
             normalized_value: value.normalized_value,
             weight:value.weight ? value.weight : equalSubWeight,
           }));
@@ -394,8 +400,9 @@ const IDI_weight = () => {
 
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
+                    <button className="graph-button" onClick={() => setShowModal(true)}>Visualize <SlGraph  className='graph-icon' /></button>
                   </div>
-                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
+                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):{Number(indicatorScore).toFixed(6)}</div>}
                   {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}
                   {decimalError ? <div className = "errors" > Weights must contain only two decimal points </div> : null}
                   {allWeightError ? <div className = "errors" > Weights should not be empty or zero </div> : null }
@@ -403,6 +410,7 @@ const IDI_weight = () => {
               </div>
             </div>
           </div>
+          <PieChart show={showModal} handleClose={handleModalClose} inputValues={inputValues} />
       </div>
       </>
   )

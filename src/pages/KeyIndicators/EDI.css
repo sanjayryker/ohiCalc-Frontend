@@ -74,7 +74,7 @@
     border: solid 0.5px #3BBA9C;
 }
 
-.card button{
+.card-header button{
     background: transparent;
     font-size: 14px;
     color: black;
@@ -85,13 +85,13 @@
     transition: all 0.3s ease;
 }
 
-.card button:hover{
+.card-header button:hover{
     background-color:#3BBA9C;
     color: white;
     border: solid 0.5px #3BBA9C ;
 }
 
-.card button:active {
+.card-header button:active {
     transform: scale(0.95);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   }

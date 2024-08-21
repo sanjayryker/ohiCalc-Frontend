@@ -11,6 +11,8 @@ import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { toast } from 'react-toastify'
+import PieChart from '../../components/PieChart'
+import { SlGraph } from "react-icons/sl";
 
 const EDI_weight = () => {
 
@@ -26,6 +28,7 @@ const EDI_weight = () => {
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
     const [keyIndLength, setKeyIndLength]=useState(false) // state to display keyInd Weight button
+    const [showModal, setShowModal] = useState(false)
 
     //Error States
     const [decimalError, setDecimalError]= useState(false)
@@ -36,8 +39,7 @@ const EDI_weight = () => {
     const [indicatorTotalError, setIndicatorTotalError] = useState(false);
     const [indicatorEmptyError, setIndicatorEmptyError] = useState(false);
 
-    const modal = true
-    const currentTab = searchParams.get('current_tab');
+    const currentTab = searchParams.get('current_tab')
 
     useEffect(() => {
       fetchData()
@@ -63,6 +65,10 @@ const EDI_weight = () => {
   //   const response = await axios.post(`${URL}/weight/api/keyIndWeight/post`,path)
   //   console.log(response)
   // }
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  }
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
@@ -106,9 +112,9 @@ const EDI_weight = () => {
           const initialValues = fetchedData.values.map(value => ({
             subInd: value.subInd,
             subInd_name: value.subInd_name,
-            best: value.best,
-            worst: value.worst,
-            current: value.current,
+            best: value.best === 0 ? "0" : value.best,
+            worst: value.worst === 0 ? "0" : value.worst,
+            current:  value.current === 0 ? "0" : value.current,
             normalized_value: value.normalized_value,
             weight:value.weight ? value.weight : equalWeight,
           }));
@@ -331,7 +337,7 @@ const EDI_weight = () => {
   return (
     <>
       <div className='key-ind1'>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} modal={modal} keyIndLength={keyIndLength} />
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} keyIndLength={keyIndLength} />
           <div className="container">
             <div className="page-inner">
               <div className="page-header">
@@ -392,15 +398,18 @@ const EDI_weight = () => {
 
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
+                    <button className="graph-button" onClick={() => setShowModal(true)}>Visualize <SlGraph  className='graph-icon' /></button>
                   </div>
-                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
+                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}): {Number(indicatorScore).toFixed(6)}</div>}
                   {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}
                   {decimalError ? <div className = "errors" > Weights must contain only two decimal points </div> : null}
                   {allWeightError ? <div className = "errors" > Weights should not be empty or zero </div> : null }
                 </div>
               </div>
+              
             </div>
           </div>
+          <PieChart show={showModal} handleClose={handleModalClose} inputValues={inputValues} />
       </div>
       </>
   )

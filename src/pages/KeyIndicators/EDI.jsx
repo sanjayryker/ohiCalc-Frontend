@@ -7,7 +7,9 @@ import {URL} from '../../App'
 import arrow from '../../assets/right_arrow.png'
 import { useNavigate } from 'react-router-dom';
 import SkeletonLoader from '../../components/SkeletonLoader';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/Sidebar'
+import PieChart from '../../components/PieChart'
+import { SlGraph } from "react-icons/sl"
 
 
   const EDI = () => {
@@ -22,8 +24,8 @@ import Sidebar from '../../components/Sidebar';
     const [isLoading, setIsLoading] = useState(true)
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
+    const [showModal, setShowModal] = useState(false)
 
-    const modal = false
     const currentTab = searchParams.get('current_tab');
 
     useEffect(() => {
@@ -42,7 +44,11 @@ import Sidebar from '../../components/Sidebar';
       setData({});
       navigate(path);
     }
-  };
+  }
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  }
 
 
     //fetch Key Ind Score
@@ -76,9 +82,9 @@ import Sidebar from '../../components/Sidebar';
           const initialValues = fetchedData.values.map(value => ({
             subInd: value.subInd,
             subInd_name: value.subInd_name,
-            best: value.best,
-            worst: value.worst,
-            current: value.current,
+            best: value.best === 0 ? "0" : value.best,
+            worst: value.worst === 0 ? "0" : value.worst,
+            current:  value.current === 0 ? "0" : value.current,
             normalized_value: value.normalized_value,
           }));
           
@@ -199,7 +205,7 @@ import Sidebar from '../../components/Sidebar';
 
     return (
       <>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} modal={modal}/>
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]}/>
       <div className='key-ind1'>
           <div className="container">
             <div className="page-inner">
@@ -250,14 +256,16 @@ import Sidebar from '../../components/Sidebar';
                       </tbody>
                   </table>
                   </div>
-                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {indicatorScore}</div>}
+                  {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}):  {Number(indicatorScore).toFixed(6)} </div>}
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
+                    <button className="graph-button" onClick={() => setShowModal(true)}>Visualize <SlGraph  className='graph-icon' /></button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <PieChart show={showModal} handleClose={handleModalClose} inputValues={inputValues} />
       </div>
       </>
     )

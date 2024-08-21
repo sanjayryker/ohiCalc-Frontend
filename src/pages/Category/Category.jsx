@@ -13,6 +13,7 @@ const Category = () => {
   const [showModal, setShowModal] = useState(false)
   const [data,setData] = useState({})
   const [loading,setLoading] = useState(false)
+  const [ohiScore, setOhiScore] = useState(null)
   const [isChecked, setIsChecked] = useState(() => {
     const saved = localStorage.getItem('isChecked')
     return saved === 'true'
@@ -50,6 +51,7 @@ const Category = () => {
   
     try{
       setLoading(true)
+      setOhiScore(null)
     const response = await axios.get(isChecked ? `${URL}/weight/api/CategoryScore/all` : `${URL}/api/CategoryScore/all`)
     const fetchedData = response.data;
 
@@ -84,7 +86,7 @@ const Category = () => {
             <h2 className="cards-heading">{value.heading}</h2>
             <div className="cards-abbr">{value.abbr}</div>
             <p className="cards-text">{value.text}</p>
-            {loading ? <Skeleton height="20.4px" width="200px" style={{marginBottom:"8px"}} /> : <p className="cards-score"> {value.score !== null ? `Score: ${value.score}` : "Score: Yet to be calculated" }</p>}
+            {loading ? <Skeleton height="20.4px" width="200px" style={{marginBottom:"8px"}} /> : <p className="cards-score"> {value.score !== null ? `Score: ${Number(value.score).toFixed(6)}` : "Score: Yet to be calculated" }</p>}
             
 
             <button className="cards-button" onClick={() => handleNavigation(value.path)}>{value.button}</button>
@@ -92,8 +94,8 @@ const Category = () => {
         ))}
       </div>
      {isChecked && <button className="open-modal-button" onClick={() => setShowModal(true)}>Enter Category Weights</button> } 
-      { data.OhiScore ? <div className="ohi-score"> OHI Score : {data?.OhiScore}</div> : <></> }
-      <CategoryModal show={showModal} handleClose={() => setShowModal(false)}/>
+      { data.OhiScore ? <div className="ohi-score"> OHI Score : {ohiScore !==null ? ohiScore : Number(data.OhiScore).toFixed(6)}</div> : <></> }
+      <CategoryModal show={showModal} handleClose={() => setShowModal(false)} ohiScore={ohiScore} setOhiScore={setOhiScore} />
     </>
     
   )

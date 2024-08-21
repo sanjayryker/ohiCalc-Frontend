@@ -4,11 +4,11 @@ import {URL} from '../App'
 import { toast } from 'react-toastify'
 import './CategoryModal.css' // Create a CSS file for styling
 
-const CategoryModal = ({ show, handleClose }) => {
+const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
     const [cdiWeight, setCdiWeight] = useState('')
     const [idiWeight, setIdiWeight] = useState('')
     const [ediWeight, setEdiWeight] = useState('')
-
+    
     const [decimalError, setDecimalError]= useState(false)
     const [totalError,setTotalError] = useState(false)
     const [allWeightError, setAllWeightError] = useState(false)
@@ -102,6 +102,7 @@ const CategoryModal = ({ show, handleClose }) => {
                 }
             )
             console.log(response)
+            setOhiScore(response.data.ohiScore)
             handleClose()
         }
         

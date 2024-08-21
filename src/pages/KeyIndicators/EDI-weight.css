@@ -75,7 +75,7 @@
       border: solid 0.5px #3BBA9C;
   }
   
-  .card button{
+  .card-header button{
       background: transparent;
       font-size: 14px;
       color: black;
@@ -86,13 +86,13 @@
       transition: all 0.3s ease;
   }
   
-  .card button:hover{
+  .card-header button:hover{
       background-color:#3BBA9C;
       color: white;
       border: solid 0.5px #3BBA9C ;
   }
   
-  .card button:active {
+  .card-header button:active {
       transform: scale(0.95);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
@@ -157,6 +157,7 @@
       justify-content: center;
       margin-bottom: 24px;
       margin-top: 20px;
+      gap: 10px ;
   }
   
   .indicator_score{
@@ -187,6 +188,57 @@
     align-items: center;
     justify-content: center;
   }
-  
+
+.submit-button{
+    background: transparent;
+    font-size: 14px;
+    color: black;
+    border: solid 0.5px #49557e ;
+    padding: 10px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover{
+    background-color:#3BBA9C;
+    color: white;
+    border: solid 0.5px #3BBA9C ;
+}
+
+.submit-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.graph-button{
+    background: transparent;
+    font-size: 14px;
+    color: black;
+    border: solid 0.5px #49557e ;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.graph-button:hover{
+    background-color:#3BBA9C;
+    color: white;
+    border: solid 0.5px #3BBA9C ;
+}
+
+.graph-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.graph-icon{
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
   
   
