@@ -189,11 +189,18 @@ const CDI = () => {
       calculation()
 
       try{
-        const response = await axios.post(`${URL}/CDI/postData`,payload)
+        const response = toast.promise(
+          await axios.post(`${URL}/CDI/postData`,payload),{
+            pending:"Submitting!",
+            success:"Submitted successfully"
+          }
+        )
+        
         setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
         console.log(err)
+        toast.error("Failed to submit, Check your network connection")
       }
     }
 

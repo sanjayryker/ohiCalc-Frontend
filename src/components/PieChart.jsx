@@ -6,7 +6,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(Tooltip, Legend, ArcElement);
 
 const PieChart = ({ show, handleClose, inputValues }) => {
-  console.log(inputValues)
   // Initialize counters for available and not available values
   let availableCount = 0;
   let notAvailableCount = 0;

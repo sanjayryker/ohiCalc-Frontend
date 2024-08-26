@@ -86,7 +86,7 @@ const Category = () => {
             <h2 className="cards-heading">{value.heading}</h2>
             <div className="cards-abbr">{value.abbr}</div>
             <p className="cards-text">{value.text}</p>
-            {loading ? <Skeleton height="20.4px" width="200px" style={{marginBottom:"8px"}} /> : <p className="cards-score"> {value.score !== null ? `Score: ${Number(value.score).toFixed(6)}` : "Score: Yet to be calculated" }</p>}
+            {loading ? <Skeleton height="20.4px" width="150px" style={{marginBottom:"8px"}} /> : <p className="cards-score"> {value.score !== null ? `Score: ${Number(value.score).toFixed(6)}` : "Score: Yet to be calculated" }</p>}
             
 
             <button className="cards-button" onClick={() => handleNavigation(value.path)}>{value.button}</button>

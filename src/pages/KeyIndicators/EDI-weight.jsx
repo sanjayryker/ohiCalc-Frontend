@@ -11,7 +11,7 @@ import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { toast } from 'react-toastify'
-import PieChart from '../../components/PieChart'
+import PieChart from '../../components/PieChart'  
 import { SlGraph } from "react-icons/sl";
 
 const EDI_weight = () => {

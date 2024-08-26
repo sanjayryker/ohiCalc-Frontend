@@ -5,12 +5,10 @@ import WeightModal from "./WeightModal";
 
 
 const Sidebar = ({ keyIndScore, handleNavigation, keyScore, path, keyIndLength }) => {
-  const sidebarDataset = { EDI: SidebarEdiData, CDI: SidebarCdiData, IDI: SidebarIdiData }
 
+  const sidebarDataset = { EDI: SidebarEdiData, CDI: SidebarCdiData, IDI: SidebarIdiData }
   const isChecked = localStorage.getItem('isChecked') === 'true'
   const [showModal, setShowModal] = useState(false)
-  // const [showButton, setShowButton] = useState(false)
-
   const selectedDataset = sidebarDataset[path]
 
   const navigation = (path) => {

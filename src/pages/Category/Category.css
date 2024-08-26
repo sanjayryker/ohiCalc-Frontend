@@ -115,9 +115,16 @@
   margin: 20px auto;
   display: block;
   border-radius: 20px;
-  transition: 0.5s all ease;
+  transition: 0.3s all ease;
 }
 
 .open-modal-button:hover {
-  transform: scale(1.08);
+  background-color:#3BBA9C;
+    color: white;
+    border: solid 0.5px #3BBA9C ;
+}
+
+.open-modal-button:active{
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }

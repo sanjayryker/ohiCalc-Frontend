@@ -3,6 +3,8 @@ import axios from 'axios'
 import {URL} from '../App'
 import { toast } from 'react-toastify'
 import './CategoryModal.css' // Create a CSS file for styling
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
     const [cdiWeight, setCdiWeight] = useState('')
@@ -13,6 +15,8 @@ const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
     const [totalError,setTotalError] = useState(false)
     const [allWeightError, setAllWeightError] = useState(false)
 
+    const [loading, setLoading] =  useState(false)
+
   useEffect(() => {
     if (show) {
       fetchWeights()
@@ -20,6 +24,7 @@ const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
   }, [show])
 
   const fetchWeights = async () => {
+    setLoading(true)
     try {
       const response = await axios.get(`${URL}/weight/api/categoryWeight/get`)
       if(response){
@@ -28,7 +33,7 @@ const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
         setIdiWeight(weights.idi_weight ? weights.idi_weight : 33.33)
         setEdiWeight(weights.edi_weight ? weights.edi_weight : 33.33)
       }
-      
+      setLoading(false)
     } catch (error) {
       console.error('Error fetching weights', error)
     }
@@ -122,27 +127,37 @@ const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
 
             <div className="form-groups">
                 <label>EDI Weight:</label>
+                {!loading ? 
                 <input
                 type="number"
                 value={ediWeight}
                 onChange={(e) => setEdiWeight(e.target.value)}
-                />
+                /> : <Skeleton height={33.6} width={260}/>
+                }
+
             </div>
             <div className="form-groups">
                 <label>IDI Weight:</label>
+                {!loading ? 
                 <input
                 type="number"
                 value={idiWeight}
                 onChange={(e) => setIdiWeight(e.target.value)}
-                />
+                /> : <Skeleton height={33.6} width={260}/>
+                }
+                
+
             </div>
             <div className="form-groups">
                 <label>CDI Weight:</label>
+                {!loading ? 
                 <input
                 type="number"
                 value={cdiWeight}
                 onChange={(e) => setCdiWeight(e.target.value)}
-                />
+                />:<Skeleton height={33.6} width={260}/>
+                }
+                
             </div>
             <button type="submit">Submit</button>
             {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}

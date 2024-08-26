@@ -10,6 +10,7 @@ import SkeletonLoader from '../../components/SkeletonLoader';
 import Sidebar from '../../components/Sidebar'
 import PieChart from '../../components/PieChart'
 import { SlGraph } from "react-icons/sl"
+import { toast } from 'react-toastify'
 
 
   const EDI = () => {
@@ -195,11 +196,18 @@ import { SlGraph } from "react-icons/sl"
       calculation()
 
       try{
-        const response = await axios.post(`${URL}/EDI/postData`,payload)
+        const response = toast.promise(
+          await axios.post(`${URL}/EDI/postData`,payload),{
+            pending:"Submitting!",
+            success:"Submitted successfully"
+          }
+        )
+        
         setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
         console.log(err)
+        toast.error("Failed to submit, Check your network connection")
       }
     }
 
