@@ -13,6 +13,7 @@ import SkeletonLoaderWeight from '../../components/SkeletonLoaderWeight';
 import { toast } from 'react-toastify'
 import PieChart from '../../components/PieChart'
 import { SlGraph } from "react-icons/sl";
+import { useAuthContext } from '../../hooks/useAuthContext'
 
 const IDI_weight = () => {
 
@@ -38,14 +39,16 @@ const IDI_weight = () => {
     const [indicatorTotalError, setIndicatorTotalError] = useState(false);
     const [indicatorEmptyError, setIndicatorEmptyError] = useState(false);
 
-    const modal = true
-    const currentTab = searchParams.get('current_tab');
+    const currentTab = searchParams.get('current_tab') || "Ind1"
+
+    const {user}  = useAuthContext()
 
     useEffect(() => {
-      fetchData()
-      keyIndScoreFetch()
-      // keyIndWeightFetch()
-    }, [currentTab, setSearchParams, location.pathname]);
+      if(user){
+        keyIndScoreFetch()
+        fetchData()
+      }
+    }, [currentTab,setSearchParams, location.pathname, user])
 
   //Navigate between keyInds
   const navigate = useNavigate();
@@ -60,12 +63,6 @@ const IDI_weight = () => {
     }
   };
 
-  //Fetch KeyIndWeight
-  // const keyIndWeightFetch = async()=>{
-  //   const response = await axios.post(`${URL}/weight/api/keyIndWeight/post`,path)
-  //   console.log(response)
-  // }
-
   const handleModalClose = () => {
     setShowModal(false);
   };
@@ -79,7 +76,11 @@ const IDI_weight = () => {
       setIndicatorDecimalError(false);
       setIndicatorEmptyError(false);
 
-      const response = await axios.get(`${URL}/weight/api/keyIndScore/IDI`)
+      const response = await axios.get(`${URL}/weight/api/keyIndScore/IDI`,{
+        headers:{
+          'Authorization' : `Bearer ${user.token}`
+        }
+      })
       setKeyScore(null)
       setKeyIndLength(false)
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
@@ -103,7 +104,11 @@ const IDI_weight = () => {
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/weight/IDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/weight/IDI/getData`,{category,key,ind},{
+          headers:{
+            'Authorization' : `Bearer ${user.token}`
+          }
+        })
         const fetchedData = response.data
 
         const equalSubWeight = (Math.floor((100 / datas.subInd.length) * 100) / 100).toFixed(2)
@@ -298,7 +303,11 @@ const IDI_weight = () => {
 
         try{
           const response = await toast.promise(
-            axios.post(`${URL}/weight/IDI/postData`,payload),{
+            axios.post(`${URL}/weight/IDI/postData`,payload,{
+              headers:{
+                'Authorization' : `Bearer ${user.token}`
+              }
+            }),{
               pending: 'Submitting data'
             }
           )
@@ -339,7 +348,7 @@ const IDI_weight = () => {
   return (
     <>
       <div className='key-ind1'>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} modal={modal} keyIndLength={keyIndLength} />
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} keyIndLength={keyIndLength} user={user} />
           <div className="container">
             <div className="page-inner">
               <div className="page-header">

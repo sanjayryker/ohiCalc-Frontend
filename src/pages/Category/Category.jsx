@@ -7,6 +7,7 @@ import ToggleSwitch from "../../components/ToggleSwitch"
 import CategoryModal from "../../components/CategoryModal"
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import { useAuthContext } from "../../hooks/useAuthContext"
 
 const Category = () => {
 
@@ -18,6 +19,9 @@ const Category = () => {
     const saved = localStorage.getItem('isChecked')
     return saved === 'true'
   }); // State for button toggle
+
+  const {user}  = useAuthContext()
+
   const [mapData, setMapData] = useState([
     { id: 1, heading: 'EDI', abbr: "(External Drivers Index)", text: 'Used to asses the social, economic, cultural and other factors affecting One Health development', button: 'Calculate', path: "/EDI/keyInd1?current_tab=Ind1" , score: '' },
     { id: 2, heading: 'IDI', abbr: "(Intrinsic Drivers Index)", text: 'Formed to assess One Health Practice at the interfaces of human health, animal health and environment health', button: 'Calculate', path: "/IDI/keyInd1?current_tab=Ind1", score: '' },
@@ -31,7 +35,9 @@ const Category = () => {
 
   // Update mapData whenever isChecked changes
   useEffect(() => {
-    fetchData()
+    if(user){
+      fetchData()
+    }
     setMapData(prevData => prevData.map(item => {
       if (item.heading === 'EDI') {
         return { ...item, path: !isChecked ? "/EDI/keyInd1?current_tab=Ind1" : "/EDI/weight/keyInd1?current_tab=Ind1" }
@@ -44,7 +50,7 @@ const Category = () => {
       }
     }));
     localStorage.setItem('isChecked',isChecked)
-  }, [isChecked])
+  }, [isChecked,user])
 
 
   const fetchData = async() =>{
@@ -52,7 +58,11 @@ const Category = () => {
     try{
       setLoading(true)
       setOhiScore(null)
-    const response = await axios.get(isChecked ? `${URL}/weight/api/CategoryScore/all` : `${URL}/api/CategoryScore/all`)
+    const response = await axios.get(isChecked ? `${URL}/weight/api/CategoryScore/all` : `${URL}/api/CategoryScore/all` , {
+      headers:{
+        'Authorization' : `Bearer ${user.token}`
+      }
+    })
     const fetchedData = response.data;
 
     setData(response.data)
@@ -95,7 +105,7 @@ const Category = () => {
       </div>
      {isChecked && <button className="open-modal-button" onClick={() => setShowModal(true)}>Enter Category Weights</button> } 
       { data.OhiScore ? <div className="ohi-score"> OHI Score : {ohiScore !==null ? ohiScore : Number(data.OhiScore).toFixed(6)}</div> : <></> }
-      <CategoryModal show={showModal} handleClose={() => setShowModal(false)} ohiScore={ohiScore} setOhiScore={setOhiScore} />
+      <CategoryModal show={showModal} handleClose={() => setShowModal(false)} ohiScore={ohiScore} setOhiScore={setOhiScore} user={user} />
     </>
     
   )

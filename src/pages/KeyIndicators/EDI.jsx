@@ -11,7 +11,7 @@ import Sidebar from '../../components/Sidebar'
 import PieChart from '../../components/PieChart'
 import { SlGraph } from "react-icons/sl"
 import { toast } from 'react-toastify'
-
+import { useAuthContext } from '../../hooks/useAuthContext'
 
   const EDI = () => {
 
@@ -27,12 +27,16 @@ import { toast } from 'react-toastify'
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
     const [showModal, setShowModal] = useState(false)
 
-    const currentTab = searchParams.get('current_tab');
+    const currentTab = searchParams.get('current_tab') || "Ind1"
+
+    const {user}  = useAuthContext()
 
     useEffect(() => {
-      fetchData()
-      keyIndScoreFetch()
-    }, [currentTab, setSearchParams, location.pathname]);
+      if(user){
+        fetchData()
+        keyIndScoreFetch()
+      }
+    }, [currentTab, setSearchParams, location.pathname, user]);
 
   //Navigate between keyInds
   const navigate = useNavigate();
@@ -54,7 +58,11 @@ import { toast } from 'react-toastify'
 
     //fetch Key Ind Score
     const keyIndScoreFetch = async() =>{
-      const response = await axios.get(`${URL}/api/keyIndScore/EDI`)
+      const response = await axios.get(`${URL}/api/keyIndScore/EDI`,{
+        headers:{
+          'Authorization' : `Bearer ${user.token}`
+        }
+      })
       setKeyScore(null)
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
       const keyScores = sortedArray.map((value) => value.keyInd_Score)
@@ -76,7 +84,11 @@ import { toast } from 'react-toastify'
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/EDI/getData`,{category,key,ind},{
+          headers:{
+            'Authorization' : `Bearer ${user.token}`
+          }
+        })
         const fetchedData = response.data
         
         if (fetchedData && fetchedData.values) {
@@ -196,13 +208,16 @@ import { toast } from 'react-toastify'
       calculation()
 
       try{
-        const response = toast.promise(
-          await axios.post(`${URL}/EDI/postData`,payload),{
+        const response = await toast.promise(
+           axios.post(`${URL}/EDI/postData`,payload,{
+            headers:{
+              'Authorization' : `Bearer ${user.token}`
+            }
+          }),{
             pending:"Submitting!",
-            success:"Submitted successfully"
           }
         )
-        
+        toast.success(response.data.message)
         setKeyScore(response.data.keyScore)
         console.log(response)
       }catch(err){
@@ -213,7 +228,7 @@ import { toast } from 'react-toastify'
 
     return (
       <>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]}/>
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} user ={user}/>
       <div className='key-ind1'>
           <div className="container">
             <div className="page-inner">

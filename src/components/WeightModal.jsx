@@ -5,7 +5,7 @@ import {URL} from '../App'
 import { toast } from 'react-toastify'
 
 
-const WeightModal = ({ show, handleClose, selectedDataset,path }) => {
+const WeightModal = ({ show, handleClose, selectedDataset,path, user }) => {
 
     const [fetchedWeights, setFetchedWeights] = useState([])
     const [weights, setWeights] = useState({})
@@ -16,14 +16,20 @@ const WeightModal = ({ show, handleClose, selectedDataset,path }) => {
     const [allWeightError, setAllWeightError] = useState(false)
 
     useEffect(() =>{
-      fetchData()
-    },[path])
+      if(user){
+        fetchData()
+      }
+    },[path,user])
 
     const fetchData = async()=>{
         const splitPath = (location.pathname.split('/').filter(Boolean))
         const category = {path : splitPath[0]}
         try {
-          const response = await axios.post(`${URL}/weight/api/keyIndWeight/get`,category );
+          const response = await axios.post(`${URL}/weight/api/keyIndWeight/get`,category,{
+            headers:{
+              'Authorization' : `Bearer ${user.token}`
+            }
+          } );
           const fetchedData = response.data;
           setFetchedWeights(fetchedData);
 
@@ -109,10 +115,13 @@ const WeightModal = ({ show, handleClose, selectedDataset,path }) => {
 
         try {
           const response = await toast.promise(
-            axios.post(`${URL}/weight/api/keyIndWeight/post`, payload),{
+            axios.post(`${URL}/weight/api/keyIndWeight/post`, payload,{
+              headers:{
+                'Authorization' : `Bearer ${user.token}`
+              }
+            }),{
               pending: 'Submitting weights',
               success: 'Weights submitted successfully!',
-              // error: 'Failed to submit weights!',
             }
           )
           console.log(response.data);

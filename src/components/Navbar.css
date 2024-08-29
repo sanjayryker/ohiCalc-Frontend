@@ -33,7 +33,7 @@
     cursor: pointer;
 }
 
-.navbar button{
+.nav-button{
     background: transparent;
     font-size: 16px;
     color: white;
@@ -44,7 +44,7 @@
     transition: 0.3s;
 }
 
-.navbar button:hover{
+.nav-button:hover{
     background-color:#3BBA9C;
     color: white;
 }

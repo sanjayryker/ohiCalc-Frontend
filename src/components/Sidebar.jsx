@@ -4,7 +4,7 @@ import { SidebarCdiData, SidebarEdiData, SidebarIdiData } from "./SidebarData";
 import WeightModal from "./WeightModal";
 
 
-const Sidebar = ({ keyIndScore, handleNavigation, keyScore, path, keyIndLength }) => {
+const Sidebar = ({ keyIndScore, handleNavigation, keyScore, path, keyIndLength, user }) => {
 
   const sidebarDataset = { EDI: SidebarEdiData, CDI: SidebarCdiData, IDI: SidebarIdiData }
   const isChecked = localStorage.getItem('isChecked') === 'true'
@@ -46,7 +46,7 @@ const Sidebar = ({ keyIndScore, handleNavigation, keyScore, path, keyIndLength }
         )}
       </ul>
     </div>
-    <WeightModal show={showModal} handleClose={handleModalClose} selectedDataset={selectedDataset} path={path} />
+    <WeightModal show={showModal} handleClose={handleModalClose} selectedDataset={selectedDataset} path={path} user={user} />
     </>
   );
 };

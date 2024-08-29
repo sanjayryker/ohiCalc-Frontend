@@ -6,7 +6,7 @@ import './CategoryModal.css' // Create a CSS file for styling
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
+const CategoryModal = ({ show, handleClose, user, setOhiScore }) => {
     const [cdiWeight, setCdiWeight] = useState('')
     const [idiWeight, setIdiWeight] = useState('')
     const [ediWeight, setEdiWeight] = useState('')
@@ -18,15 +18,19 @@ const CategoryModal = ({ show, handleClose, ohiScore, setOhiScore }) => {
     const [loading, setLoading] =  useState(false)
 
   useEffect(() => {
-    if (show) {
+    if (show && user ) {
       fetchWeights()
     }
-  }, [show])
+  }, [show,user])
 
   const fetchWeights = async () => {
     setLoading(true)
     try {
-      const response = await axios.get(`${URL}/weight/api/categoryWeight/get`)
+      const response = await axios.get(`${URL}/weight/api/categoryWeight/get`,{
+        headers:{
+          'Authorization' : `Bearer ${user.token}`
+        }
+      })
       if(response){
         const weights = response.data
         setCdiWeight(weights.cdi_weight ? weights.cdi_weight : 33.33)

@@ -13,6 +13,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import { toast } from 'react-toastify'
 import PieChart from '../../components/PieChart'
 import { SlGraph } from "react-icons/sl";
+import { useAuthContext } from '../../hooks/useAuthContext'
 
 const CDI_weight = () => {
 
@@ -38,13 +39,16 @@ const CDI_weight = () => {
     const [indicatorTotalError, setIndicatorTotalError] = useState(false);
     const [indicatorEmptyError, setIndicatorEmptyError] = useState(false);
 
-    const currentTab = searchParams.get('current_tab');
+    const currentTab = searchParams.get('current_tab') || "Ind1"
+
+    const {user}  = useAuthContext()
 
     useEffect(() => {
-      fetchData()
-      keyIndScoreFetch()
-      // keyIndWeightFetch()
-    }, [currentTab, setSearchParams, location.pathname]);
+      if(user){
+        keyIndScoreFetch()
+        fetchData()
+      }
+    }, [currentTab,setSearchParams, location.pathname, user])
 
   //Navigate between keyInds
   const navigate = useNavigate();
@@ -59,12 +63,6 @@ const CDI_weight = () => {
     }
   };
 
-  //Fetch KeyIndWeight
-  // const keyIndWeightFetch = async()=>{
-  //   const response = await axios.post(`${URL}/weight/api/keyIndWeight/post`,path)
-  //   console.log(response)
-  // }
-
   const handleModalClose = () => {
     setShowModal(false);
   };
@@ -78,7 +76,11 @@ const CDI_weight = () => {
       setIndicatorDecimalError(false);
       setIndicatorEmptyError(false);
 
-      const response = await axios.get(`${URL}/weight/api/keyIndScore/CDI`)
+      const response = await axios.get(`${URL}/weight/api/keyIndScore/CDI`,{
+        headers:{
+          'Authorization' : `Bearer ${user.token}`
+        }
+      })
       setKeyScore(null)
       setKeyIndLength(false)
       const sortedArray = response.data.sort((a,b) =>Number(a.keyInd)-Number(b.keyInd))
@@ -102,7 +104,11 @@ const CDI_weight = () => {
       // console.log(category,key,ind)
   
       try{
-        const response = await axios.post(`${URL}/weight/CDI/getData`,{category,key,ind})
+        const response = await axios.post(`${URL}/weight/CDI/getData`,{category,key,ind},{
+          headers:{
+            'Authorization' : `Bearer ${user.token}`
+          }
+        })
         const fetchedData = response.data
 
         const equalWeight = (Math.floor((100 / datas.subInd.length) * 100) / 100).toFixed(2)
@@ -296,7 +302,11 @@ const CDI_weight = () => {
 
         try{
           const response = await toast.promise(
-            axios.post(`${URL}/weight/CDI/postData`,payload),{
+            axios.post(`${URL}/weight/CDI/postData`,payload,{
+              headers:{
+                'Authorization' : `Bearer ${user.token}`
+              }
+            }),{
               pending: 'Submitting data'
             }
           )
@@ -336,7 +346,7 @@ const CDI_weight = () => {
   return (
     <>
       <div className='key-ind1'>
-      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} keyIndLength={keyIndLength} />
+      <Sidebar keyIndScore={keyIndScore} handleNavigation={handleNavigation} keyScore={keyScore} path={splitPath[0]} keyIndLength={keyIndLength} user={user} />
           <div className="container">
             <div className="page-inner">
               <div className="page-header">
