@@ -33,6 +33,12 @@
     cursor: pointer;
 }
 
+.nav_name{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 .nav-button{
     background: transparent;
     font-size: 16px;

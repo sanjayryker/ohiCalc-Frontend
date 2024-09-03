@@ -87,6 +87,9 @@ const Category = () => {
   }
   } 
 
+  console.log(mapData)
+
+
   return (
     <>
       <ToggleSwitch isChecked={isChecked} setIsChecked={setIsChecked} />
@@ -103,7 +106,7 @@ const Category = () => {
           </div>
         ))}
       </div>
-     {isChecked && <button className="open-modal-button" onClick={() => setShowModal(true)}>Enter Category Weights</button> } 
+     {isChecked && mapData.every(item => item.score !== null) && <button className="open-modal-button" onClick={() => setShowModal(true)}>Enter Category Weights</button> } 
       { data.OhiScore ? <div className="ohi-score"> OHI Score : {ohiScore !==null ? ohiScore : Number(data.OhiScore).toFixed(6)}</div> : <></> }
       <CategoryModal show={showModal} handleClose={() => setShowModal(false)} ohiScore={ohiScore} setOhiScore={setOhiScore} user={user} />
     </>

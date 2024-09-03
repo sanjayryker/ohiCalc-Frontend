@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
 import {URL} from '../App'
-import axios from "axios";
+import axios from "axios"
+import { toast } from 'react-toastify'
 
 export const useLogin = () =>{
     const [error,setError] = useState(null)
@@ -12,6 +13,7 @@ export const useLogin = () =>{
         setIsLoading(true)
         setError(null)
         try {
+
             const response = await axios.post(`${URL}/api/user/login`, {
                 email,
                 password
@@ -31,6 +33,7 @@ export const useLogin = () =>{
         } catch (error) {
             setIsLoading(false)
             setError(error.response?.data?.error)
+            throw new Error (error.response?.data?.error)
         }
      }
      return {login, isLoading, error}

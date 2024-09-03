@@ -29,15 +29,14 @@ const Navbar = () => {
     </ul>
     {/* <img src={profile_icon} className="profile-icon" alt="profile icon" style={{height:"30px"}}></img> */}
 
-    {user && <div>
+    {user && <div className="nav_name">
         <span>{user.email}</span>
         <Link onClick={handleLogout} className="nav-button"> Logout</Link>
     </div>}
     {!user && <div>
         <Link to='/login' className="nav-button">Log-in</Link>
-        <Link to='/signup' className="nav-button">sign-in</Link>
     </div>}
-    </div>;
+    </div>
 };
 
 export default Navbar;
