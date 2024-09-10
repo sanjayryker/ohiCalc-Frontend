@@ -30,6 +30,7 @@ const EDI_weight = () => {
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
     const [keyIndLength, setKeyIndLength]=useState(false) // state to display keyInd Weight button
     const [showModal, setShowModal] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     //Error States
     const [decimalError, setDecimalError]= useState(false)
@@ -39,7 +40,8 @@ const EDI_weight = () => {
     const [indicatorDecimalError, setIndicatorDecimalError] = useState(false);
     const [indicatorTotalError, setIndicatorTotalError] = useState(false);
     const [indicatorEmptyError, setIndicatorEmptyError] = useState(false);
-
+    const [weightErrorArray, setWeightErrorArray] = useState([])
+    
     const currentTab = searchParams.get('current_tab') || "Ind1"
 
     const {user}  = useAuthContext()
@@ -196,7 +198,7 @@ const EDI_weight = () => {
         const decimalPart = weightStr.split('.')[1];
         if (decimalPart && decimalPart.length !== 2) {
           setIndicatorDecimalError(true);
-          toast.error("Indicator Weight must contain only two decimal points")
+          toast.error("Indicator Weight must have two or no decimal points")
           return false;
         }
       }
@@ -217,6 +219,7 @@ const EDI_weight = () => {
       setDecimalError(false)
       setTotalError(false)
       setAllWeightError(false)
+      setIsSubmitting(true)
       
       let hasAllWeightError = false;
       let hasDecimalError = false;
@@ -275,15 +278,18 @@ const EDI_weight = () => {
         if (weightArray.includes(0)) {
           hasAllWeightError = true;
           setAllWeightError(hasAllWeightError);
+          toast.error("Weights should not be empty or zero")
         } else if (weightArray.includes(1)) {
           hasDecimalError = true;
           setDecimalError(hasDecimalError);
+          toast.error("Weights must have two or no decimal points")
 
         } else {
           // Check if weights add up to 100 and impose error
           const weightTotal = weightArray.reduce((a, b) => a + b, 0);
           hasTotalError = Math.round(weightTotal) !== 100;
           setTotalError(Math.round(weightTotal) !== 100);
+          if(Math.round(weightTotal) !== 100) {toast.error("Weights must add up to a total of 100")}
         } 
 
         //Update the Normalized values in the inputValues 
@@ -328,9 +334,12 @@ const EDI_weight = () => {
              console.log(err)
              toast.error("Failed to submit data")
             }
+          }finally {
+            setIsSubmitting(false)
           }
         console.log(payload)
         }
+        setWeightErrorArray(weightArray)
       }
 
       const payload = {
@@ -390,13 +399,20 @@ const EDI_weight = () => {
                       </thead>
                       <tbody>
                         {!isLoading ?  inputValues.map((data,index) =>{
+                          const weightErrorClass = (
+                            (decimalError && weightErrorArray[index] === 1) || 
+                            (allWeightError && weightErrorArray[index] === 0) || 
+                            totalError
+                          ) ? 'indicator_error' : '';
+                          
+                          console.log(weightErrorArray)
                           return(
                           <tr key={index}>
                             <td>{data.subInd_name}</td>
                             <td><input type='number'value={data.current || ''} onChange={(e)=> handleInputChange(index,"current",e.target.value)}/></td>
                             <td><input type='number'value={data.worst || ''} onChange={(e)=> handleInputChange(index,"worst",e.target.value)}/></td>
                             <td><input type='number'value={data.best || ''} onChange={(e)=> handleInputChange(index,"best",e.target.value)} /></td>
-                            <td><input type='number'value={data.weight || ''} onChange={(e)=> handleInputChange(index,"weight",e.target.value)} /></td>
+                            <td><input type='number'  className={weightErrorClass}  value={data.weight || ''} onChange={(e)=> handleInputChange(index,"weight",e.target.value)} /></td>
                         </tr>
                           ) 
                         }):(  
@@ -413,13 +429,13 @@ const EDI_weight = () => {
                   {/* {indicatorEmptyError ? <div className = "errors">Ind Weight should not be empty or zero</div>:null } */}
 
                   <div className='button-container'>
-                    <button className='submit-button' onClick={handleSubmit} >Calculate</button>
-                    <button className="graph-button" onClick={() => setShowModal(true)}>Visualize <SlGraph  className='graph-icon' /></button>
+                    <button className='submit-button' onClick={handleSubmit} disabled={isSubmitting}  >Calculate</button>
+                    <button className="graph-button" onClick={() => setShowModal(true)} disabled={isSubmitting} >Visualize <SlGraph  className='graph-icon' /></button>
                   </div>
                   {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}): {Number(indicatorScore).toFixed(6)}</div>}
-                  {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}
+                  {/* {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}
                   {decimalError ? <div className = "errors" > Weights must contain only two decimal points </div> : null}
-                  {allWeightError ? <div className = "errors" > Weights should not be empty or zero </div> : null }
+                  {allWeightError ? <div className = "errors" > Weights should not be empty or zero </div> : null } */}
                 </div>
               </div>
               

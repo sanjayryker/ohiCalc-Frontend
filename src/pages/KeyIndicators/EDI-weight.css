@@ -240,10 +240,10 @@
 }
 
 .indicator_error{
-    border: 1px solid red;
+    border: 2px solid red;
 }
 
 .indicator_error:focus{
-    outline: 1px solid red;
+    outline: none;
 }
   

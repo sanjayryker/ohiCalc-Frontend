@@ -26,7 +26,8 @@ const IDI = () => {
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
     const [showModal, setShowModal] = useState(false)
-
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    
     const currentTab = searchParams.get('current_tab') || "Ind1"
 
     const {user}  = useAuthContext()
@@ -151,7 +152,7 @@ const IDI = () => {
     }
 
     const handleSubmit = async() =>{
-
+      setIsSubmitting(true)
       const calculation = () =>{
 
         let normalizedArray = []
@@ -224,6 +225,8 @@ const IDI = () => {
       }catch(err){
         console.log(err)
         toast.error("Failed to submit, Check your network connection")
+      }finally {
+        setIsSubmitting(false)
       }
     }
 
@@ -282,8 +285,8 @@ const IDI = () => {
                 </div>
                 {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}): {Number(indicatorScore).toFixed(6)}</div>}
                 <div className='button-container'>
-                  <button className='submit-button' onClick={handleSubmit} >Calculate</button>
-                  <button className="graph-button" onClick={() => setShowModal(true)}>Visualize <SlGraph  className='graph-icon' /></button>
+                  <button className='submit-button' onClick={handleSubmit} disabled={isSubmitting}>Calculate</button>
+                  <button className="graph-button" onClick={() => setShowModal(true)} disabled={isSubmitting}>Visualize <SlGraph  className='graph-icon' /></button>
                 </div>
               </div>
             </div>
