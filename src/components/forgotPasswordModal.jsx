@@ -35,11 +35,11 @@ const ForgotPasswordModal = ({ onClose }) => {
   return (
     <div className="fmodal-overlay">
       <div className="fmodal-container">
+        <button className="fclose-button" onClick={onClose}>
+            &times;
+        </button>
         <div className="fmodal-header">
           <h2>Forgot Password</h2>
-          <button className="close-button" onClick={onClose}>
-            &times;
-          </button>
         </div>
         <div className="fmodal-body">
           <form onSubmit={handleSubmit}>

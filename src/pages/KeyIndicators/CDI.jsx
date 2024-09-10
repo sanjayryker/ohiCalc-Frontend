@@ -26,9 +26,12 @@ const CDI = () => {
     const [keyIndScore,setKeyIndScore] = useState([]) //State to map all keyInd Scores
     const [keyScore,setKeyScore] = useState(null) // State for keyScore change we get from response
     const [showModal, setShowModal] = useState(false)
+    
     const currentTab = searchParams.get('current_tab') || "Ind1"
 
     const {user}  = useAuthContext()
+
+    const localUser = JSON.parse(localStorage.getItem('user'))
 
     useEffect(() => {
       if(user){
@@ -197,6 +200,7 @@ const CDI = () => {
         ind_name:data.indName,
         status:true,
         values:[],
+        user_id: localUser.userId
       }
       console.log(payload)
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import "./Login.css";
 import { useLogin } from "../../hooks/useLogin";
 import { useSignup } from '../../hooks/useSignup'
@@ -9,6 +9,9 @@ import { toast } from 'react-toastify'
 import {URL} from '../../App'
 import axios from 'axios'
 import ForgotPasswordModal from "../../components/forgotPasswordModal";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import { IoInformationCircle } from "react-icons/io5";
+import { IoInformationCircleSharp } from "react-icons/io5";
 
 const Login = () => {
   const [email,setEmail] = useState('')
@@ -17,9 +20,33 @@ const Login = () => {
   const [action, setAction] = useState("Login")
   const [isFlipping, setIsFlipping] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
+  const [strength, setStrength] = useState("")
+  const [strengthWord, setStrengthWord] = useState("")
+  
   const{login,isLoading,error} = useLogin()
   const {signup,errorsign,isLoadingsign} = useSignup()
+
+  const calculateStrength = (password) => {
+    let strength = 0;
+  
+    // Check conditions for strength
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+  
+    const strengthWords = ["Weak", "Medium", "Good", "Strong","Very  Strong"];
+  setStrength(strength);
+  setStrengthWord(strengthWords[strength - 1]);
+  };  
+
+  const handlePasswordChange = (e) => {
+    const passwordValue = e.target.value;
+    setPassword(passwordValue);
+    calculateStrength(passwordValue);
+  };
+  
 
   const handleLogin = async (e) =>
   {
@@ -86,7 +113,7 @@ const Login = () => {
           </div>
           <div className="login_input">
             <FaLock className="login_icon" />
-            <input type="password" placeholder="password"  onChange={(e) => setPassword(e.target.value) } value={password}  />
+            <input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value) } value={password}  />
           </div>
 
           {/* <div className="error"></div>
@@ -121,11 +148,26 @@ const Login = () => {
           <div className="signup_input">
             <MdEmail className="signup_icon" />
             <input type="email" placeholder="Email Id" onChange={(e) => setEmail(e.target.value) } value={email} />
-          </div>
+          </div>  
           <div className="signup_input" >
             <FaLock className="signup_icon" />
-            <input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value) } value={password}/>
+            <input type="password" placeholder="password" onChange={handlePasswordChange} value={password}/>
+            <IoInformationCircleSharp className="info_icon" data-tooltip-id="my-tooltip-1" style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} />
+            <ReactTooltip
+            id="my-tooltip-1"
+            place="top"
+            style={{fontSize:"12px"}}
+            content={<>
+             Password should be atleast 8 characters <br/>
+             Must contain a symbol and a number<br />
+             Must contain a uppercase letter<br/>
+          </>}
+            />
           </div>
+          <div className="password-strength">
+              <div className={`strength-bar strength-${strength}`}></div> 
+          </div>
+          <div className="strength-word"> {(strengthWord && strengthWord !== "" && strengthWord !== null) ? <div> {strengthWord} </div> : <div style={{height:"16.8px", width:"20px"}}> </div> }</div>
           <div className="login_submit_conatiner">
             <button className={ action === "SignUp" ? "login_submit" : "login_submit gray"} disabled={isLoadingsign} >
               Signup
@@ -139,7 +181,6 @@ const Login = () => {
 
         </form>
       </div>
-
       </div>
       {isModalOpen && (
         <ForgotPasswordModal

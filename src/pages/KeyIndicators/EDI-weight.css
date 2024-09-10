@@ -93,7 +93,7 @@
   }
   
   .card-header button:active {
-      transform: scale(0.95);
+      transform: scale(0.97);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
   
@@ -120,20 +120,18 @@
       padding: 20px;
   }
   
-  td input{
+  td input, .weight_input{
       padding-left: 10px;
+      padding: 5px;
+      width: 120px;
+      border-radius:5px;
+      border: 0.5px solid black;
   }
   
   .head-pad{
       padding-right: 100px;
   }
   
-  td input{
-      padding: 5px;
-      width: 120px;
-      border-radius:5px;
-      border: 0.5px solid black;
-  }
   
   /* .card-container{
       display: flex;
@@ -207,7 +205,7 @@
 }
 
 .submit-button:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -232,7 +230,7 @@
 }
 
 .graph-button:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -240,5 +238,12 @@
     font-size: 16px;
     transition: transform 0.3s ease;
 }
-  
+
+.indicator_error{
+    border: 1px solid red;
+}
+
+.indicator_error:focus{
+    outline: 1px solid red;
+}
   

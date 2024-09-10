@@ -35,6 +35,7 @@ const Category = () => {
 
   // Update mapData whenever isChecked changes
   useEffect(() => {
+    console.log(window.location.href)
     if(user){
       fetchData()
     }
@@ -87,7 +88,6 @@ const Category = () => {
   }
   } 
 
-  console.log(mapData)
 
 
   return (

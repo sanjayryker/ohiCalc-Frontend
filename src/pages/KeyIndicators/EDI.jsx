@@ -31,6 +31,8 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 
     const {user}  = useAuthContext()
 
+    const localUser = JSON.parse(localStorage.getItem('user'))  
+  
     useEffect(() => {
       if(user){
         fetchData()
@@ -202,6 +204,8 @@ import { useAuthContext } from '../../hooks/useAuthContext'
         ind_name:data.indName,
         status:true,
         values:[],
+        user_id: localUser.userId
+        
       }
       // console.log(payload)
 

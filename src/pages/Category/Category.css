@@ -77,13 +77,18 @@
     padding: 10px 30px;
     border-radius: 20px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s;
 }
 
 .cards button:hover{
     background-color:#3BBA9C;
     color: white;
     border: solid 0.5px #3BBA9C ;
+}
+
+.cards button:active{
+  transform: scale(0.97);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
   .cards-abbr {
@@ -125,6 +130,6 @@
 }
 
 .open-modal-button:active{
-  transform: scale(0.95);
+  transform: scale(0.97);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }

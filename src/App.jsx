@@ -15,6 +15,7 @@ import IDI_weight from './pages/KeyIndicators/IDI-weight'
 import CDI_weight from './pages/KeyIndicators/CDI-weight'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
+import ResetPassword from './pages/ResetPassword/ResetPassword'
 
 
 export const URL = import.meta.env.VITE_SERVER_URL
@@ -23,12 +24,19 @@ export const URL = import.meta.env.VITE_SERVER_URL
 const App = () => {
   const {user} = useAuthContext()
 
+    
+    // if (user === null) {
+    //   console.log("no USER")
+    //   return <div></div>
+    // }
+    
+
   return (
     <div className='app'>
       <BrowserRouter>
         <Navbar/>
         <Routes>
-          <Route path='/' element={<Navigate to='/category'/>} /> 
+          {/* <Route path='/' element={<Navigate to='/category'/>} />  */}
           <Route path='/login' element={!user ? <Login/> : <Navigate to='/category'/> } />
           <Route path='/signup' element={<Signup/>} />
           <Route path='/category' element={ user ? <Category/> : <Navigate to='/login'/> } />
@@ -38,6 +46,7 @@ const App = () => {
           <Route path='/EDI/weight/:page' element={ user ? <EDI_weight/> : <Navigate to='/login'/>}/>
           <Route path='/IDI/weight/:page' element={ user ? <IDI_weight/> : <Navigate to='/login'/>}/>
           <Route path='/CDI/weight/:page' element={user ? <CDI_weight/> : <Navigate to='/login'/>}/>
+          <Route path='/reset_password/:id/:token' element={<ResetPassword/>} />
         </Routes>
       </BrowserRouter>
     </div>

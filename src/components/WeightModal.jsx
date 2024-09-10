@@ -77,13 +77,13 @@ const WeightModal = ({ show, handleClose, selectedDataset,path, user }) => {
         const hasWeight = value !== null || value !== ''
         // weights are checked for 2 decimal values after . and  pushed to an array accordingly 
         if (hasWeight) {
-          const weight = value;
-          const weightStr = weight.toString();
-          const decimalIndex = weightStr.indexOf('.');
+          const weight = value
+          const weightStr = weight.toString()
+          const decimalIndex = weightStr.indexOf('.')
           
           if (decimalIndex === -1) {
             // If it is not a decimal, push it
-            totalArray.push(Number(weight));
+            totalArray.push(Number(weight))
           }else {
             const decimalPart = weightStr.split('.')[1];
             totalArray.push(decimalPart && decimalPart.length === 2 ? Number(weight) : 1);  // Push one if not two decimal
@@ -98,11 +98,11 @@ const WeightModal = ({ show, handleClose, selectedDataset,path, user }) => {
       // Check the weighted array for 0 or 1 and throw err (0 means no value,  1 means not two values after '.' )
 
       if (totalArray.includes(0)) {
-        hasAllWeightError = true;
-        setAllWeightError(hasAllWeightError);
+        hasAllWeightError = true
+        setAllWeightError(hasAllWeightError)
       } else if (totalArray.includes(1)) {
-        hasDecimalError = true;
-        setDecimalError(hasDecimalError);
+        hasDecimalError = true
+        setDecimalError(hasDecimalError)
 
       } else {
         // Check if weights add up to 100 and impose error
@@ -148,7 +148,7 @@ const WeightModal = ({ show, handleClose, selectedDataset,path, user }) => {
             {selectedDataset.map((val,index) =>(
                 <div key={index} className="form-group">
                     <label>{val.title}</label>
-                    <input type="text" name={index} value={ weights[index] || ''} onChange={handleChange} /> 
+                    <input type="number" name={index} value={ weights[index] || ''} onChange={handleChange} /> 
                 </div>
             ))}
             

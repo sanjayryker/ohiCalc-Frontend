@@ -44,6 +44,8 @@ const EDI_weight = () => {
 
     const {user}  = useAuthContext()
 
+    const localUser = JSON.parse(localStorage.getItem('user'))
+
     useEffect(() => {
       if(user){
         keyIndScoreFetch()
@@ -184,6 +186,7 @@ const EDI_weight = () => {
     
       if (indicatorWeight == '' || indicatorWeight == null || indicatorWeight == 0) {
         setIndicatorEmptyError(true);
+        toast.error("Indicator Weight should not be empty or zero")
         return false;
       }
       const weightStr = indicatorWeight.toString();
@@ -193,6 +196,7 @@ const EDI_weight = () => {
         const decimalPart = weightStr.split('.')[1];
         if (decimalPart && decimalPart.length !== 2) {
           setIndicatorDecimalError(true);
+          toast.error("Indicator Weight must contain only two decimal points")
           return false;
         }
       }
@@ -266,6 +270,7 @@ const EDI_weight = () => {
         })
 
         // Check the weighted array for 0 or 1 and throw err (0 means no value,  1 means not two values after '.' )
+        console.log(weightArray)
 
         if (weightArray.includes(0)) {
           hasAllWeightError = true;
@@ -338,6 +343,7 @@ const EDI_weight = () => {
         ind_weight:indicatorWeight,
         status:true,
         values:[],
+        user_id: localUser.userId
       }
       
       calculation()
@@ -400,11 +406,11 @@ const EDI_weight = () => {
                   </table>
                   </div>
                   <div className='card-line'> </div>
-                  {!isLoading ?<div className='indicator_weight'>Weightage of the indicator - {data.indName} (%) <input value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='text' /> </div>
+                  {!isLoading ?<div className='indicator_weight'>Weightage of the indicator - {data.indName} (%) <input className={indicatorDecimalError || indicatorEmptyError || indicatorTotalError ? "weight_input indicator_error " : 'weight_input'} value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='number' /> </div>
                    : <div className='indicator_weight'><Skeleton style={{width:"100px", height:"27.6px"}}/> </div>}
-                  {indicatorTotalError ? <div className = "errors">Ind Weight must add up to a total of 100</div> : null}
-                  {indicatorDecimalError ? <div className = "errors">Ind Weight must contain only two decimal points</div> : null}
-                  {indicatorEmptyError ? <div className = "errors">Ind Weight should not be empty or zero</div>:null }
+                  {/* {indicatorTotalError ? <div className = "errors">Ind Weight must add up to a total of 100</div> : null} */}
+                  {/* {indicatorDecimalError ? <div className = "errors">Ind Weight must contain only two decimal points</div> : null} */}
+                  {/* {indicatorEmptyError ? <div className = "errors">Ind Weight should not be empty or zero</div>:null } */}
 
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} >Calculate</button>
