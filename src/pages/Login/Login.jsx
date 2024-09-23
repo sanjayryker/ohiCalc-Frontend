@@ -1,7 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import "./Login.css";
 import { useLogin } from "../../hooks/useLogin";
-import { useSignup } from '../../hooks/useSignup'
 import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
@@ -12,6 +11,9 @@ import ForgotPasswordModal from "../../components/forgotPasswordModal";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { IoInformationCircle } from "react-icons/io5";
 import { IoInformationCircleSharp } from "react-icons/io5";
+import { IoEye } from "react-icons/io5"
+import { IoEyeOff } from "react-icons/io5"
+
 
 const Login = () => {
   const [email,setEmail] = useState('')
@@ -22,9 +24,11 @@ const Login = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [strength, setStrength] = useState("")
   const [strengthWord, setStrengthWord] = useState("")
+  const [showPasswordLogin, setShowPasswordLogin] = useState(false)
+  const [showPasswordSign, setShowPasswordSign] = useState(false)
+  const [isLoadingsign, setIsLoadingsign] = useState(false)
   
   const{login,isLoading,error} = useLogin()
-  const {signup,errorsign,isLoadingsign} = useSignup()
 
   const calculateStrength = (password) => {
     let strength = 0;
@@ -63,25 +67,30 @@ const Login = () => {
           },
         }
       );       
-      console.log(email,password)
   }
 
   const handleSignup = async (e) =>
   {
-    // console.log(email,password, name)
-      e.preventDefault()
-      toast.promise(
-        signup(email, password, name), // Pass the promise directly to toast.promise
-        {
-          pending: "Signing in...", 
-          success: "Signed in successfully!", 
-          error:{
-            render({data}){
-              return data.message
-            }
-          },
-        }
-      );       
+    setIsLoadingsign(true)
+      e.preventDefault()       
+      try{
+        const response = await toast.promise(
+             axios.post(`${URL}/api/user/signup`,{email,password,name}),{
+              pending:"Signing in...",
+              success:"Email verification sent successfully",
+              error: {
+                render({ data }) {
+                  return data.response?.data?.message;
+                },
+            },
+             }
+          )
+        console.log(response)
+        setIsLoadingsign(false)
+      }catch(err){
+        console.log(err)
+        setIsLoadingsign(false)
+      }
   }
 
   const toggleAction = () => {
@@ -113,12 +122,16 @@ const Login = () => {
           </div>
           <div className="login_input">
             <FaLock className="login_icon" />
-            <input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value) } value={password}  />
+            <input type={showPasswordLogin ? "text" :"password"} placeholder="password" onChange={(e) => setPassword(e.target.value) } value={password}/>
+            {showPasswordLogin ?
+            <IoEye style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} onClick={() =>setShowPasswordLogin(!showPasswordLogin)} /> :
+            <IoEyeOff style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} onClick={() =>setShowPasswordLogin(!showPasswordLogin)}  />
+            }
           </div>
 
           {/* <div className="error"></div>
           {error && <div className="error">{error}</div>} */}
-          <div className="forgot_password" onClick={() => setIsModalOpen(true)} >Forgot Password?</div>
+          <div className="forgot_password" ><span onClick={() => setIsModalOpen(true)}>Forgot Password?</span></div>
 
           <div className="signup_submit_conatiner">
             <button className={ action === "Login" ? "login_submit" : "login_submit gray"} disabled={isLoading}  >
@@ -151,15 +164,19 @@ const Login = () => {
           </div>  
           <div className="signup_input" >
             <FaLock className="signup_icon" />
-            <input type="password" placeholder="password" onChange={handlePasswordChange} value={password}/>
-            <IoInformationCircleSharp className="info_icon" data-tooltip-id="my-tooltip-1" style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} />
+            <input type={showPasswordSign ? "text" :"password"} placeholder="password" onChange={handlePasswordChange} value={password}/>
+            {showPasswordSign ? 
+            <IoEye style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} onClick={() =>setShowPasswordSign(!showPasswordSign)} /> :
+            <IoEyeOff style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} onClick={() =>setShowPasswordSign(!showPasswordSign)} />
+            }
+            <IoInformationCircleSharp data-tooltip-id="my-tooltip-1" style={{height:"25px", width:"20px", marginRight:"5px", cursor:"pointer", color:"grey"}} />
             <ReactTooltip
             id="my-tooltip-1"
             place="top"
             style={{fontSize:"12px"}}
             content={<>
              Password should be atleast 8 characters <br/>
-             Must contain a symbol and a number<br />
+             Must contain a symbol and a number<br/>
              Must contain a uppercase letter<br/>
           </>}
             />

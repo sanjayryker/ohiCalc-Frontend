@@ -1,7 +1,9 @@
 .toggle-switch {
     position: fixed;
-    top:10vh;
-    right: 20px;
+    top:13vh;
+    right: 40px;
+    display: flex;
+    align-items: center;
 }
 
 .toggle-switch input[type=checkbox] {
@@ -12,14 +14,14 @@
 
 .switch {
     cursor: pointer;
-    width: 90px;
+    width: 100px;
     height: 40px;
     background: #2F4050;
     /* #2F4050 */
     display: flex;
     align-items: center;
     justify-content: right;
-    padding-right: 20px;
+    padding-right: 10px;
     border-radius: 50px;
     position: relative;
     font-size: 16px;
@@ -42,7 +44,7 @@
 input:checked + .switch {
     background:#3BBA9C;
     justify-content: left;
-    padding-left: 20px;
+    padding-left: 10px;
 }
 
 input:checked + .switch:after {

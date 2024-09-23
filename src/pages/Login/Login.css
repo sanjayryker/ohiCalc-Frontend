@@ -1,5 +1,5 @@
 .loginBox{
-  position: relative;
+  position: fixed;
   width:100%;
   float:inline-start;
   min-height: 100%;
@@ -9,7 +9,7 @@
 .loginCard {
   width: 400px;
   min-height: 400px;
-  margin: 22vh auto;
+  margin:22vh auto;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
@@ -115,6 +115,9 @@
   padding-left: 60px;
   color:white;
   font-size: 14px;
+}
+
+.forgot_password span{
   cursor: pointer;
 }
 

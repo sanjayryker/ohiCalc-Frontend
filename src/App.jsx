@@ -14,8 +14,8 @@ import EDI_weight from './pages/KeyIndicators/EDI-weight'
 import IDI_weight from './pages/KeyIndicators/IDI-weight'
 import CDI_weight from './pages/KeyIndicators/CDI-weight'
 import Login from './pages/Login/Login'
-import Signup from './pages/Signup/Signup'
 import ResetPassword from './pages/ResetPassword/ResetPassword'
+import SigninVerification from './pages/SigninVerification/SigninVerification'
 
 
 export const URL = import.meta.env.VITE_SERVER_URL
@@ -38,7 +38,6 @@ const App = () => {
         <Routes>
           {/* <Route path='/' element={<Navigate to='/category'/>} />  */}
           <Route path='/login' element={!user ? <Login/> : <Navigate to='/category'/> } />
-          <Route path='/signup' element={<Signup/>} />
           <Route path='/category' element={ user ? <Category/> : <Navigate to='/login'/> } />
           <Route path='/EDI/:page' element={ user ? <EDI/> : <Navigate to='/login'/> } />
           <Route path='/IDI/:page' element={ user ? <IDI/> : <Navigate to='/login'/>} />
@@ -47,6 +46,7 @@ const App = () => {
           <Route path='/IDI/weight/:page' element={ user ? <IDI_weight/> : <Navigate to='/login'/>}/>
           <Route path='/CDI/weight/:page' element={user ? <CDI_weight/> : <Navigate to='/login'/>}/>
           <Route path='/reset_password/:id/:token' element={<ResetPassword/>} />
+          <Route path='/signinVerification/:verifyToken' element={<SigninVerification/>} />
         </Routes>
       </BrowserRouter>
     </div>

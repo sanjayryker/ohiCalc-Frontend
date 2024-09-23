@@ -130,6 +130,7 @@ td input{
 td input{
     padding: 5px;
     width: 120px;
+    padding-left: 10px;
     border-radius:5px;
     border: 0.5px solid black;
 }

@@ -16,8 +16,9 @@ const Navbar = () => {
     const handleLogout =() =>{
         logout()
     }
-
-  return <div className="navbar">
+ 
+  return<> { location.pathname == '/signinVerification/:verifyToken' ? <></> : 
+  <div className="navbar">
     
     <div className="nav-left">
         <img src={icon} alt="icon" style={{height:'30px'}} className="nav-logo"/>
@@ -37,7 +38,8 @@ const Navbar = () => {
     {!user && location.pathname !== '/login' && <div>
         <Link to='/login' className="nav-button">Log-in</Link>
     </div>}
-    </div>
+    </div>}
+    </>
 };
 
 export default Navbar;

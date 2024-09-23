@@ -14,6 +14,8 @@ import { toast } from 'react-toastify'
 import PieChart from '../../components/PieChart'  
 import { SlGraph } from "react-icons/sl";
 import { useAuthContext } from '../../hooks/useAuthContext'
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import { IoInformationCircleSharp } from "react-icons/io5";
 
 const EDI_weight = () => {
 
@@ -394,7 +396,13 @@ const EDI_weight = () => {
                           <th>Current Value</th>
                           <th>Worst Value</th>
                           <th>Best Value</th>
-                          <th> Weight (%) </th>
+                          <th className='thWeight'> Weight (%)  <IoInformationCircleSharp data-tooltip-id="my-tooltip-1" className='weightTooltip' /> </th>
+                          <ReactTooltip
+                          id="my-tooltip-1"
+                          place="right"
+                          style={{fontSize:"11px"}}
+                          content={<>Sum of the subIndicator weights <br/>should be 100</>}
+                          />
                         </tr>
                       </thead>
                       <tbody>
@@ -422,20 +430,25 @@ const EDI_weight = () => {
                   </table>
                   </div>
                   <div className='card-line'> </div>
-                  {!isLoading ?<div className='indicator_weight'>Weightage of the indicator - {data.indName} (%) <input className={indicatorDecimalError || indicatorEmptyError || indicatorTotalError ? "weight_input indicator_error " : 'weight_input'} value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='number' /> </div>
-                   : <div className='indicator_weight'><Skeleton style={{width:"100px", height:"27.6px"}}/> </div>}
-                  {/* {indicatorTotalError ? <div className = "errors">Ind Weight must add up to a total of 100</div> : null} */}
-                  {/* {indicatorDecimalError ? <div className = "errors">Ind Weight must contain only two decimal points</div> : null} */}
-                  {/* {indicatorEmptyError ? <div className = "errors">Ind Weight should not be empty or zero</div>:null } */}
+
+                  {!isLoading ?
+                  <div className='indicator_weight'> 
+                    <div style={{display:"flex", alignItems:"center"}}>Weightage of the indicator - {data.indName} (%) <IoInformationCircleSharp data-tooltip-id="my-tooltip-2" className='weightTooltip' /></div>  
+                    <input className={indicatorDecimalError || indicatorEmptyError || indicatorTotalError ? "weight_input indicator_error " : 'weight_input'} value={indicatorWeight || ''} onChange={(e) => setIndicatorWeight(e.target.value)} type='number' /> 
+                    <ReactTooltip
+                    id="my-tooltip-2"
+                    place="right"
+                    style={{fontSize:"11px"}}
+                    content={<><div>Sum of the indicator weights should be 100</div><div>Check all the indicator tabs</div></>}
+                    />
+                  </div>
+                  : <div className='indicator_weight'><Skeleton style={{width:"100px", height:"27.6px"}}/> </div>}
 
                   <div className='button-container'>
                     <button className='submit-button' onClick={handleSubmit} disabled={isSubmitting}  >Calculate</button>
                     <button className="graph-button" onClick={() => setShowModal(true)} disabled={isSubmitting} >Visualize <SlGraph  className='graph-icon' /></button>
                   </div>
                   {indicatorScore !== '' &&  <div className='indicator_score'>Indicator Score ({data.indName}): {Number(indicatorScore).toFixed(6)}</div>}
-                  {/* {totalError ? <div className = "errors" > Weights must add up to a total of 100 </div> : null}
-                  {decimalError ? <div className = "errors" > Weights must contain only two decimal points </div> : null}
-                  {allWeightError ? <div className = "errors" > Weights should not be empty or zero </div> : null } */}
                 </div>
               </div>
               

@@ -60,7 +60,7 @@ const ResetPassword = (e) => {
               onChange={(e) => setPassword2(e.target.value)}
               required
             />
-
+            
             <button type="submit" className="fsubmit-button">
                submit
             </button>
